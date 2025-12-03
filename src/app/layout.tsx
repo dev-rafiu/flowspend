@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import Header from "@/app/components/Header";
 import { Roboto } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -21,7 +23,13 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={`${roboto.className} antialiased`}>{children}</body>
+        <body className={`${roboto.className} antialiased`}>
+          <Header />
+
+          <main className="container">{children}</main>
+
+          <Toaster position="top-right" richColors />
+        </body>
       </html>
     </ClerkProvider>
   );

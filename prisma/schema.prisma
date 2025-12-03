@@ -30,7 +30,6 @@ model Transaction {
 id String   @id @default(uuid())
 text String
 amount Float
-
 // relation to user
 userId String
 user User @relation(fields: [userId], references: [clerkUserId], onDelete: Cascade)
