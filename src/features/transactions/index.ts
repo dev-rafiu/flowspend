@@ -1,5 +1,3 @@
-// Components
-export { default as AddTransactions } from "./components/AddTransactions";
 export { default as Balance } from "./components/Balance";
 export { default as IncomeExpense } from "./components/IncomeExpense";
 export { default as TransactionItem } from "./components/TransactionItem";
@@ -14,4 +12,3 @@ export { default as getIncomeExpense } from "./actions/getIncomeExpense";
 
 // Types
 export type { Transaction } from "./types/Transaction";
-

@@ -7,6 +7,7 @@ import { revalidatePath } from "next/cache";
 interface TransactionData {
   text: string;
   amount: number;
+  category?: string | null;
 }
 
 interface TransactionResult {
@@ -18,6 +19,7 @@ export default async function addTransaction(
 ): Promise<TransactionResult> {
   const textValue = formData.get("text");
   const amountValue = formData.get("amount");
+  const categoryValue = formData.get("category");
 
   if (!textValue || textValue === "" || !amountValue) {
     return { error: "Missing required fields" };
@@ -25,6 +27,9 @@ export default async function addTransaction(
 
   const text: string = textValue.toString();
   const amount: number = parseFloat(amountValue.toString());
+  const category: string | null = categoryValue
+    ? categoryValue.toString()
+    : null;
 
   // get logged in user
   const { userId } = await auth();
@@ -38,6 +43,7 @@ export default async function addTransaction(
       data: {
         text,
         amount,
+        category,
         userId,
       },
     });
