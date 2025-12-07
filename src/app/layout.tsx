@@ -52,16 +52,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en" className="scroll-smooth">
-        <body className={`${inter.variable} font-sans antialiased`}>
+    <html lang="en" className="scroll-smooth">
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <ClerkProvider>
           <ConditionalSidebar />
           <ConditionalHeader />
           <main>{children}</main>
           <ConditionalBottomNav />
           <Toaster position="top-right" richColors />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   );
 }
