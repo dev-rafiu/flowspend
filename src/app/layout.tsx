@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     siteName: "FlowSpend",
     images: [
       {
-        url: "/og-image.png",
+        url: "/opengraph-image.png",
         width: 1170,
         height: 780,
         alt: "FlowSpend",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     title: "FlowSpend - Track Your Money, Control Your Flow",
     description:
       "Track your expenses, analyze spending patterns, and make smarter financial decisions with FlowSpend.",
-    images: ["/og-image.png"],
+    images: ["/opengraph-image.png"],
   },
 };
 
