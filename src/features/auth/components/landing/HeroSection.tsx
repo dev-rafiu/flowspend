@@ -4,6 +4,7 @@ import { motion, useInView } from "framer-motion";
 import { SignInButton } from "@clerk/nextjs";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
+import Image from "next/image";
 
 const HeroSection = () => {
   const ref = useRef(null);
@@ -59,7 +60,14 @@ const HeroSection = () => {
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
         transition={{ delay: 0.4, duration: 0.8 }}
         className="bg-gray-100 mx-auto w-220 lg:h-120 h-80 hidden lg:block"
-      />
+      >
+        <Image
+          src="/dashboard-mockup.png"
+          alt="Dashboard Mockup"
+          width={1000}
+          height={1000}
+        />
+      </motion.div>
 
       {/* stats */}
       <motion.div className="mt-20 grid-cols-3 gap-8 max-w-2xl mx-auto hidden">

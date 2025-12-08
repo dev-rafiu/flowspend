@@ -20,6 +20,7 @@ export const metadata: Metadata = {
   title: "FlowSpend - Track Your Money, Control Your Flow",
   description:
     "Track your expenses, analyze spending patterns, and make smarter financial decisions with FlowSpend",
+
   openGraph: {
     title: "FlowSpend - Track Your Money, Control Your Flow",
     description:
@@ -37,6 +38,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
     title: "FlowSpend - Track Your Money, Control Your Flow",
@@ -55,10 +57,14 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased`}>
         <ClerkProvider>
-          <ConditionalSidebar />
-          <ConditionalHeader />
-          <main>{children}</main>
-          <ConditionalBottomNav />
+          <div className="dashboard-grid-container relative">
+            <ConditionalSidebar />
+            <ConditionalHeader />
+            <main className="dashboard-main px-2 h-screen overflow-y-auto">
+              <div className="h-full p-4 pr-0">{children}</div>
+            </main>
+            <ConditionalBottomNav />
+          </div>
           <Toaster position="top-right" richColors />
         </ClerkProvider>
       </body>

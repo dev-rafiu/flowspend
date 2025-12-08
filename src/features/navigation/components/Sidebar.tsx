@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, List, BarChart3 } from "lucide-react";
-import { UserButton } from "@clerk/nextjs";
+import { Home, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Sidebar = () => {
@@ -17,19 +16,14 @@ const Sidebar = () => {
     },
     {
       href: "/transactions",
-      icon: List,
+      icon: Receipt,
       label: "Transactions",
-    },
-    {
-      href: "/analytics",
-      icon: BarChart3,
-      label: "Analytics",
     },
   ];
 
   return (
-    <aside className="hidden md:flex fixed left-0 top-0 bottom-0 w-64 bg-white border-r border-slate-200 flex-col z-40">
-      <div className="p-6 border-b border-slate-200">
+    <aside className="dashboard-sidebar max-h-screen hidden md:flex w-64 bg-white border-r border-slate-200 flex-col sticky top-0">
+      <div className="p-4 border-b border-slate-200">
         <Link href="/dashboard" className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">FS</span>
@@ -68,11 +62,7 @@ const Sidebar = () => {
         })}
       </nav>
 
-      <div className="p-4 border-t border-slate-200">
-        <div className="flex items-center justify-end">
-          <UserButton />
-        </div>
-      </div>
+      <div className="p-4 border-t border-slate-200" />
     </aside>
   );
 };

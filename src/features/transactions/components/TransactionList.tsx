@@ -2,8 +2,10 @@
 
 import { useState, useMemo } from "react";
 import TransactionItem from "./TransactionItem";
+import TransactionTableRow from "./TransactionTableRow";
 import { Transaction } from "../types/Transaction";
 import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,
@@ -11,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import { Search, X, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
@@ -46,7 +49,7 @@ function TransactionList({ transactions, error }: TransactionListProps) {
   const filteredAndSortedTransactions = useMemo(() => {
     let filtered = transactions;
 
-    // Filter by search query
+    // filter by search query
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
@@ -57,12 +60,12 @@ function TransactionList({ transactions, error }: TransactionListProps) {
       );
     }
 
-    // Filter by category
+    // filter by category
     if (selectedCategory !== "all") {
       filtered = filtered.filter((t) => t.category === selectedCategory);
     }
 
-    // Sort transactions
+    // sort transactions
     const sorted = [...filtered].sort((a, b) => {
       switch (sortBy) {
         case "date-desc":
@@ -100,7 +103,7 @@ function TransactionList({ transactions, error }: TransactionListProps) {
   // group transactions by date
   const groupedTransactions = useMemo(() => {
     const grouped = filteredAndSortedTransactions.reduce((acc, transaction) => {
-      // Use transactionDate if available, otherwise createdAt
+      // use transactionDate if available, otherwise createdAt
       const date = transaction.transactionDate
         ? new Date(transaction.transactionDate)
         : new Date(transaction.createdAt);
@@ -192,18 +195,19 @@ function TransactionList({ transactions, error }: TransactionListProps) {
         </h2>
       </header>
 
-      {/* search and filters */}
+      {/* filters */}
       <div className="space-y-6">
+        {/* search and filters */}
         <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between">
-          {/* search Bar */}
-          <div className="relative flex-1">
+          {/* search */}
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
             <Input
               type="text"
               placeholder="Search transactions..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10! pr-10! h-10 text-sm rounded-full! lg:rounded-md"
+              className="pl-10! pr-10! h-10 text-sm rounded-full! lg:rounded-md!"
             />
 
             {searchQuery && (
@@ -224,7 +228,7 @@ function TransactionList({ transactions, error }: TransactionListProps) {
               value={selectedCategory}
               onValueChange={setSelectedCategory}
             >
-              <SelectTrigger className="w-full h-10 text-sm rounded-full! lg:rounded-md!">
+              <SelectTrigger className="w-full h-10 text-sm rounded-full! lg:rounded-md! cursor-pointer">
                 <div className="flex items-center gap-4">
                   <Filter className="w-3.5 h-3.5 text-slate-500 sm:block hidden" />
                   <SelectValue placeholder="All Categories" />
@@ -246,9 +250,10 @@ function TransactionList({ transactions, error }: TransactionListProps) {
               value={sortBy}
               onValueChange={(value) => setSortBy(value as SortOption)}
             >
-              <SelectTrigger className="w-full h-10 text-sm rounded-full! lg:rounded-md!">
+              <SelectTrigger className="w-full h-10 text-sm rounded-full! lg:rounded-md! cursor-pointer">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
+
               <SelectContent>
                 <SelectItem value="date-desc">Newest First</SelectItem>
                 <SelectItem value="date-asc">Oldest First</SelectItem>
@@ -329,26 +334,60 @@ function TransactionList({ transactions, error }: TransactionListProps) {
           </p>
         </div>
       ) : (
-        <div className="space-y-4 sm:space-y-6">
-          {Object.entries(groupedTransactions)
-            .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
-            .map(([dateKey, dateTransactions]) => (
-              <div key={dateKey} className="flex flex-col gap-2">
-                <h4 className="text-xs font-medium text-slate-600 uppercase tracking-wide px-1 sm:px-0">
-                  {formatGroupDate(dateKey)}
-                </h4>
+        <>
+          {/* mobile cards with date grouping */}
+          <div className="md:hidden space-y-4 sm:space-y-6">
+            {Object.entries(groupedTransactions)
+              .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
+              .map(([dateKey, dateTransactions]) => (
+                <div key={dateKey} className="flex flex-col gap-2">
+                  <h4 className="text-xs font-medium text-slate-600 uppercase tracking-wide px-1 sm:px-0">
+                    {formatGroupDate(dateKey)}
+                  </h4>
 
-                <ul className="space-y-2">
-                  {dateTransactions.map((transaction) => (
-                    <TransactionItem
-                      key={transaction.id}
-                      transaction={transaction}
-                    />
-                  ))}
-                </ul>
-              </div>
-            ))}
-        </div>
+                  <ul className="space-y-2">
+                    {dateTransactions.map((transaction) => (
+                      <TransactionItem
+                        key={transaction.id}
+                        transaction={transaction}
+                      />
+                    ))}
+                  </ul>
+                </div>
+              ))}
+          </div>
+
+          {/* desktop table */}
+          <div className="hidden md:block border border-slate-200 rounded-lg overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-slate-50 border-b border-slate-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    Description
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    Amount
+                  </th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody className="bg-white divide-y divide-slate-200">
+                {filteredAndSortedTransactions.map((transaction) => (
+                  <TransactionTableRow
+                    key={transaction.id}
+                    transaction={transaction}
+                  />
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

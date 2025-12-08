@@ -1,4 +1,5 @@
 import TransactionItem from "./TransactionItem";
+import TransactionTableRow from "./TransactionTableRow";
 import getRecentTransactions from "../actions/getRecentTransactions";
 import Link from "next/link";
 
@@ -37,11 +38,43 @@ async function RecentTransactions() {
         </Link>
       </header>
 
-      <ul className="space-y-2">
+      {/* mobile cards */}
+      <ul className="space-y-2 md:hidden">
         {transactions.map((transaction) => (
           <TransactionItem key={transaction.id} transaction={transaction} />
         ))}
       </ul>
+
+      {/* desktop table */}
+      <div className="hidden md:block border border-slate-200 rounded-lg overflow-hidden">
+        <table className="w-full">
+          <thead className="bg-slate-50 border-b border-slate-200">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                Description
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                Date
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                Amount
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+
+          <tbody className="bg-white divide-y divide-slate-200">
+            {transactions.map((transaction) => (
+              <TransactionTableRow
+                key={transaction.id}
+                transaction={transaction}
+              />
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

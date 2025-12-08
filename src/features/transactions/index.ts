@@ -1,14 +1,14 @@
 export { default as Balance } from "./components/Balance";
-export { default as IncomeExpense } from "./components/IncomeExpense";
+export { default as KPIs } from "./components/KPIs";
 export { default as TransactionItem } from "./components/TransactionItem";
 export { default as TransactionList } from "./components/TransactionList";
 
-// Actions
+// actions
 export { default as addTransaction } from "./actions/addTransaction";
 export { default as deleteTransaction } from "./actions/deleteTransaction";
 export { default as getTransactions } from "./actions/getTransactions";
 export { default as getUserBalance } from "./actions/getUserBalance";
-export { default as getIncomeExpense } from "./actions/getIncomeExpense";
+export { default as getKPIs } from "./actions/getKPIs";
 
-// Types
+// types
 export type { Transaction } from "./types/Transaction";

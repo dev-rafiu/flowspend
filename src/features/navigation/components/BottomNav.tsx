@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, List, BarChart3 } from "lucide-react";
+import { Home, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const BottomNav = () => {
@@ -16,13 +16,8 @@ const BottomNav = () => {
     },
     {
       href: "/transactions",
-      icon: List,
+      icon: Receipt,
       label: "Transactions",
-    },
-    {
-      href: "/analytics",
-      icon: BarChart3,
-      label: "Analytics",
     },
   ];
 

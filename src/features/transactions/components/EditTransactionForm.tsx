@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import updateTransaction from "../actions/updateTransaction";
 import { Transaction } from "../types/Transaction";
 import { DialogFooter } from "@/components/ui/dialog";
+
 import {
   Select,
   SelectContent,

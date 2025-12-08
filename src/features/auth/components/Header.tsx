@@ -1,27 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import { UserButton } from "@clerk/nextjs";
-import Link from "next/link";
+import { Menu } from "lucide-react";
+import Logo from "./Logo";
 
 const Header = () => {
-  return (
-    <header className="sticky top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 md:ml-64">
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/dashboard" className="flex items-center space-x-2 md:hidden">
-            <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">FS</span>
-            </div>
-            <span className="text-xl font-semibold text-slate-900">
-              FlowSpend
-            </span>
-          </Link>
+  const [open, setOpen] = useState(false);
 
-          <div className="flex items-center ml-auto md:hidden">
-            <UserButton />
-          </div>
+  return (
+    <header className="dashboard-header sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 h-16">
+      <div className="flex items-center justify-between h-full px-4">
+        {/* logo - visible on mobile, hidden on desktop */}
+        <div className="md:hidden">
+          <Logo href="/dashboard" />
         </div>
-      </nav>
+
+        {/* menu icon - hidden on mobile, visible on desktop */}
+        <button
+          className="hidden md:block p-2 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer"
+          aria-label="Open menu"
+          onClick={() => setOpen(!open)}
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+
+        <UserButton />
+      </div>
     </header>
   );
 };
