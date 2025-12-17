@@ -72,7 +72,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-4 shrink-0">
           <span
             className={cn(
               "font-semibold text-sm whitespace-nowrap",
@@ -82,7 +82,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
             {isIncome ? "+" : "-"}${formatCurrency(amount)}
           </span>
 
-          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="flex items-center gap-1 transition-opacity duration-200">
             <EditTransactionDialog
               transaction={transaction}
               onSuccess={handleEditSuccess}

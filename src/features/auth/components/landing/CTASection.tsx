@@ -22,7 +22,7 @@ const CTASection = () => {
         className="max-w-4xl mx-auto text-center"
       >
         <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6">
-          Ready to Take Control?
+          Ready to take control?
         </h2>
 
         <p className="text-xl text-slate-300 mb-10 max-w-lg mx-auto">
@@ -32,7 +32,7 @@ const CTASection = () => {
 
         <SignInButton mode="redirect">
           <button className="cursor-pointer bg-white hover:bg-slate-100 text-slate-900 px-8 py-4 rounded-lg text-lg font-semibold transition-all duration-200 flex items-center justify-center space-x-2 mx-auto shadow-lg hover:shadow-xl">
-            <span>Get Started Free</span>
+            <span>Get started for free</span>
             <ArrowRight className="w-5 h-5" />
           </button>
         </SignInButton>

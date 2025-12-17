@@ -59,13 +59,14 @@ const HeroSection = () => {
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
         transition={{ delay: 0.4, duration: 0.8 }}
-        className="bg-gray-100 mx-auto w-220 lg:h-120 h-80 hidden lg:block"
+        className="relative mx-auto w-240 lg:h-140 h-80 hidden lg:block shadow-lg rounded-lg border"
       >
         <Image
           src="/dashboard-mockup.png"
           alt="Dashboard Mockup"
-          width={1000}
-          height={1000}
+          className="w-full h-full object-contain"
+          sizes=""
+          fill
         />
       </motion.div>
 

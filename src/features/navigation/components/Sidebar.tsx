@@ -22,7 +22,7 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="dashboard-sidebar max-h-screen hidden md:flex w-64 bg-white border-r border-slate-200 flex-col sticky top-0">
+    <aside className="dashboard-sidebar max-h-screen hidden w-64 flex-col sticky top-0 border-r">
       <div className="p-4 border-b border-slate-200">
         <Link href="/dashboard" className="flex items-center space-x-2">
           <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
