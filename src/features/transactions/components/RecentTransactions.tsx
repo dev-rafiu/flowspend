@@ -26,7 +26,7 @@ async function RecentTransactions() {
   }
 
   return (
-    <div className="space-y-4 mb-20 md:mb-0">
+    <div className="space-y-4 mb-10 md:mb-0">
       <header className="flex items-center justify-between">
         <p className="font-semibold text-slate-800 text-lg">
           Recent transactions
