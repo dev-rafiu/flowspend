@@ -25,7 +25,6 @@ interface DeleteTransactionDialogProps {
 
 const DeleteTransactionDialog = ({
   transactionId,
-  transactionText,
   children,
   onSuccess,
 }: DeleteTransactionDialogProps) => {
@@ -52,26 +51,22 @@ const DeleteTransactionDialog = ({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
 
-      <AlertDialogContent>
+      <AlertDialogContent className="space-y-4">
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
+          <AlertDialogTitle></AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete this transaction? This action cannot
             be undone.
-            <br />
-            <br />
-            <span className="font-medium text-slate-900">
-              {transactionText}
-            </span>
           </AlertDialogDescription>
         </AlertDialogHeader>
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+
           <AlertDialogAction
             onClick={handleDelete}
             disabled={isDeleting}
-            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            className="bg-red-500 hover:bg-red-700 focus:ring-red-600"
           >
             {isDeleting ? "Deleting..." : "Delete"}
           </AlertDialogAction>

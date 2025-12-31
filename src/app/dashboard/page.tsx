@@ -3,9 +3,11 @@ import { redirect } from "next/navigation";
 import Balance from "@/features/transactions/components/Balance";
 import KPIs from "@/features/transactions/components/KPIs";
 import RecentTransactions from "@/features/transactions/components/RecentTransactions";
+import getTransactions from "@/features/transactions/actions/getTransactions";
 
 export default async function Dashboard() {
   const user = await currentUser();
+  const { transactions } = await getTransactions();
 
   if (!user) {
     redirect("/");
@@ -18,7 +20,7 @@ export default async function Dashboard() {
       </h2>
 
       <Balance />
-      <KPIs />
+      {transactions && transactions?.length > 0 && <KPIs />}
       <RecentTransactions />
     </div>
   );

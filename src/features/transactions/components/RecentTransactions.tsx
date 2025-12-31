@@ -14,12 +14,12 @@ async function RecentTransactions() {
     );
   }
 
-  if (!transactions || transactions.length === 0) {
+  if (transactions?.length === 0) {
     return (
       <div className="bg-slate-50 border border-slate-200 rounded-lg p-12 text-center">
         <p className="text-slate-600 text-base">No transactions found</p>
         <p className="text-slate-500 text-sm mt-2">
-          Start by adding your first transaction
+          Start by adding your first transaction on the transactions page
         </p>
       </div>
     );
@@ -42,7 +42,7 @@ async function RecentTransactions() {
 
       {/* mobile cards */}
       <ul className="space-y-2 md:hidden">
-        {transactions.map((transaction) => (
+        {transactions?.map((transaction) => (
           <TransactionItem key={transaction.id} transaction={transaction} />
         ))}
       </ul>
@@ -68,7 +68,7 @@ async function RecentTransactions() {
           </thead>
 
           <tbody className="bg-white divide-y divide-slate-200">
-            {transactions.map((transaction) => (
+            {transactions?.map((transaction) => (
               <TransactionTableRow
                 key={transaction.id}
                 transaction={transaction}
