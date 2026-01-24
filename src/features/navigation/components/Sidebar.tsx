@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Receipt } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Logo from "@/components/Logo";
 
 const Sidebar = () => {
   const pathname = usePathname();
@@ -22,19 +23,12 @@ const Sidebar = () => {
   ];
 
   return (
-    <aside className="dashboard-sidebar max-h-screen hidden w-64 flex-col sticky top-0 border-r">
-      <div className="p-4 border-b border-slate-200">
-        <Link href="/dashboard" className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">FS</span>
-          </div>
-          <span className="text-xl font-semibold text-slate-900">
-            FlowSpend
-          </span>
-        </Link>
+    <aside className="dashboard-sidebar sticky top-0 hidden max-h-screen w-64 flex-col border-r">
+      <div className="border-b border-slate-200 p-4">
+        <Logo href="/dashboard" />
       </div>
 
-      <nav className="flex-1 p-4 space-y-2">
+      <nav className="flex-1 space-y-2 p-4">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -44,16 +38,16 @@ const Sidebar = () => {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors",
+                "flex items-center space-x-3 rounded-lg px-4 py-3 transition-colors",
                 isActive
-                  ? "bg-slate-100 text-slate-900"
+                  ? "bg-slate-800 text-white"
                   : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
               <Icon
                 className={cn(
-                  "w-5 h-5",
-                  isActive ? "text-slate-900" : "text-slate-500"
+                  "h-5 w-5",
+                  isActive ? "text-white" : "text-slate-500"
                 )}
               />
               <span className="font-medium">{item.label}</span>
@@ -62,7 +56,7 @@ const Sidebar = () => {
         })}
       </nav>
 
-      <div className="p-4 border-t border-slate-200" />
+      <div className="border-t border-slate-200 p-4" />
     </aside>
   );
 };

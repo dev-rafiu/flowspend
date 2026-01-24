@@ -1,7 +1,7 @@
 "use client";
 
 import { UserButton } from "@clerk/nextjs";
-import Logo from "./Logo";
+import Logo from "@/components/Logo";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Receipt } from "lucide-react";
@@ -24,12 +24,12 @@ const Header = () => {
   ];
 
   return (
-    <header className="dashboard-header sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200 h-16">
-      <div className="flex items-center justify-between h-full px-4 lg:px-0 gap-4 max-w-7xl mx-auto">
+    <header className="dashboard-header sticky top-0 z-50 h-16 border-b border-slate-200 bg-white/80 backdrop-blur-md">
+      <div className="mx-auto flex h-full max-w-7xl items-center justify-between gap-4 px-4 lg:px-0">
         <Logo href="/dashboard" />
 
         {/* navigation links - visible on desktop, centered */}
-        <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
+        <nav className="hidden flex-1 items-center justify-center gap-1 md:flex">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href;
@@ -39,16 +39,16 @@ const Header = () => {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors",
+                  "flex items-center space-x-2 rounded-lg px-4 py-2 transition-colors",
                   isActive
-                    ? "bg-slate-100 text-slate-900"
+                    ? "bg-slate-800 text-white"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 )}
               >
                 <Icon
                   className={cn(
-                    "w-5 h-5",
-                    isActive ? "text-slate-900" : "text-slate-500"
+                    "h-5 w-5",
+                    isActive ? "text-white" : "text-slate-500"
                   )}
                 />
                 <span className="font-medium">{item.label}</span>

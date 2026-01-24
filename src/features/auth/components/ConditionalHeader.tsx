@@ -1,6 +1,6 @@
 import { currentUser } from "@clerk/nextjs/server";
 import Header from "./Header";
-import LandingHeader from "./LandingHeader";
+import LandingHeader from "@/features/landing/components/LandingHeader";
 
 const ConditionalHeader = async () => {
   const user = await currentUser();

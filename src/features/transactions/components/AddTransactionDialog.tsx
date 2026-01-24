@@ -10,7 +10,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import AddTransactionForm from "./AddTransactionForm";
-
 interface AddTransactionDialogProps {
   children: React.ReactNode;
 }

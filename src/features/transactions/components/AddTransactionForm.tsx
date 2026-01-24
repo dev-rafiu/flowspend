@@ -71,42 +71,41 @@ const AddTransactionForm = ({
     }
   };
 
+  const handleTransactionTypeChange = (type: "income" | "expense") => {
+    setTransactionType(type);
+    setSelectedCategory("");
+  };
+
   return (
     <form
       action={handleSubmit}
-      className={isDialog ? "space-y-4" : "px-4 space-y-4"}
+      className={isDialog ? "space-y-4" : "space-y-4 px-4"}
     >
       {/* transaction type toggle */}
       <div className="flex gap-2">
         <button
           type="button"
-          onClick={() => {
-            setTransactionType("expense");
-            setSelectedCategory("");
-          }}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+          onClick={() => handleTransactionTypeChange("expense")}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 transition-all ${
             transactionType === "expense"
               ? "border-red-300 bg-red-50 text-red-700"
               : "border-slate-200 bg-white text-slate-600"
           }`}
         >
-          <ArrowDown className="w-4 h-4" />
+          <ArrowDown className="h-4 w-4" />
           <span className="font-medium">Expense</span>
         </button>
 
         <button
           type="button"
-          onClick={() => {
-            setTransactionType("income");
-            setSelectedCategory("");
-          }}
-          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-lg border-2 transition-all ${
+          onClick={() => handleTransactionTypeChange("income")}
+          className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 transition-all ${
             transactionType === "income"
               ? "border-green-300 bg-green-50 text-green-700"
               : "border-slate-200 bg-white text-slate-600"
           }`}
         >
-          <ArrowUp className="w-4 h-4" />
+          <ArrowUp className="h-4 w-4" />
           <span className="font-medium">Income</span>
         </button>
       </div>
@@ -124,7 +123,7 @@ const AddTransactionForm = ({
           onChange={(e) => setSelectedDate(e.target.value)}
           required
           max={new Date().toISOString().split("T")[0]}
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent"
+          className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-slate-800 focus:outline-none"
         />
       </div>
 
@@ -133,7 +132,7 @@ const AddTransactionForm = ({
         <label className="text-sm font-medium text-slate-700">Category</label>
 
         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-full h-12">
+          <SelectTrigger className="h-12 w-full">
             <SelectValue placeholder="Select a category">
               {selectedCategory &&
                 (() => {
@@ -148,7 +147,7 @@ const AddTransactionForm = ({
                   const Icon = selected.icon;
                   return (
                     <span className="flex items-center gap-2">
-                      <Icon className={`w-5 h-5 ${selected.color}`} />
+                      <Icon className={`h-5 w-5 ${selected.color}`} />
                       <span>{selected.label}</span>
                     </span>
                   );
@@ -166,7 +165,7 @@ const AddTransactionForm = ({
               return (
                 <SelectItem key={category.value} value={category.value}>
                   <span className="flex items-center gap-2">
-                    <Icon className={`w-5 h-5 ${category.color}`} />
+                    <Icon className={`h-5 w-5 ${category.color}`} />
                     <span>{category.label}</span>
                   </span>
                 </SelectItem>
@@ -188,7 +187,7 @@ const AddTransactionForm = ({
           id="text"
           placeholder="e.g., groceries, salary, etc."
           required
-          className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent"
+          className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-slate-800 focus:outline-none"
         />
       </div>
 
@@ -205,43 +204,44 @@ const AddTransactionForm = ({
           min="0"
           placeholder="0.00"
           required
-          className="w-full pl-8 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-800 focus:border-transparent"
+          className="w-full rounded-lg border border-slate-300 py-3 pr-4 pl-8 focus:border-transparent focus:ring-2 focus:ring-slate-800 focus:outline-none"
         />
       </div>
 
       {isDialog ? (
-        <DialogFooter className="flex-col sm:flex-row gap-2">
-          <button
-            type="submit"
-            className="w-full sm:w-auto bg-slate-800 hover:bg-slate-900 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            Add Transaction
-          </button>
+        <DialogFooter className="flex-col gap-2 sm:flex-row">
           <button
             type="button"
             onClick={onSuccess}
-            className="w-full sm:w-auto bg-white border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 px-4 py-3 rounded-lg font-medium transition-all duration-200"
+            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 font-medium text-slate-700 transition-all duration-200 hover:border-slate-400 hover:text-slate-900 sm:flex-1"
           >
             Cancel
+          </button>
+
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-slate-800 px-4 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:bg-slate-900 hover:shadow-lg sm:flex-1"
+          >
+            Add Transaction
           </button>
         </DialogFooter>
       ) : (
         <DrawerFooter>
-          <button
-            type="submit"
-            className="w-full bg-slate-800 hover:bg-slate-900 text-white px-4 py-3 rounded-lg font-semibold transition-all duration-200 shadow-md hover:shadow-lg"
-          >
-            Add Transaction
-          </button>
-
           <DrawerClose asChild>
             <button
               type="button"
-              className="w-full bg-white border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 px-4 py-3 rounded-lg font-medium transition-all duration-200"
+              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 font-medium text-slate-700 transition-all duration-200 hover:border-slate-400 hover:text-slate-900"
             >
               Cancel
             </button>
           </DrawerClose>
+
+          <button
+            type="submit"
+            className="w-full rounded-lg bg-slate-800 px-4 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:bg-slate-900 hover:shadow-lg"
+          >
+            Add Transaction
+          </button>
         </DrawerFooter>
       )}
     </form>

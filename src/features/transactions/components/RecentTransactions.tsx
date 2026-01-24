@@ -8,17 +8,17 @@ async function RecentTransactions() {
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800 text-sm">{error}</p>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+        <p className="text-sm text-red-800">{error}</p>
       </div>
     );
   }
 
   if (transactions?.length === 0) {
     return (
-      <div className="bg-slate-50 border border-slate-200 rounded-lg p-12 text-center">
-        <p className="text-slate-600 text-base">No transactions found</p>
-        <p className="text-slate-500 text-sm mt-2">
+      <div className="rounded-lg border border-slate-200 bg-slate-100 p-12 text-center">
+        <p className="text-base text-slate-600">No transactions found</p>
+        <p className="mt-2 text-sm text-slate-500">
           Start by adding your first transaction on the transactions page
         </p>
       </div>
@@ -26,15 +26,15 @@ async function RecentTransactions() {
   }
 
   return (
-    <div className="space-y-4 mb-10 md:mb-0">
+    <div className="mb-10 space-y-4 md:mb-0">
       <header className="flex items-center justify-between">
-        <p className="font-semibold text-slate-800 text-lg">
+        <p className="text-lg font-semibold text-slate-800">
           Recent transactions
         </p>
 
         <Link
           href="/transactions"
-          className="text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors"
+          className="text-sm font-medium text-slate-600 transition-colors hover:text-slate-800"
         >
           View All
         </Link>
@@ -48,26 +48,26 @@ async function RecentTransactions() {
       </ul>
 
       {/* desktop table */}
-      <div className="hidden md:block border border-slate-200 rounded-lg overflow-hidden">
+      <div className="hidden overflow-hidden rounded-lg border border-slate-200 md:block">
         <table className="w-full">
-          <thead className="bg-slate-50 border-b border-slate-200">
+          <thead className="border-b border-slate-200 bg-slate-50">
             <tr>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase">
                 Description
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase">
                 Date
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase">
                 Amount
               </th>
-              <th className="px-4 py-3 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">
+              <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-slate-600 uppercase">
                 Actions
               </th>
             </tr>
           </thead>
 
-          <tbody className="bg-white divide-y divide-slate-200">
+          <tbody className="divide-y divide-slate-200 bg-white">
             {transactions?.map((transaction) => (
               <TransactionTableRow
                 key={transaction.id}

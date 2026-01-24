@@ -1,7 +1,6 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-
 import {
   TrendingUp,
   Shield,
@@ -56,52 +55,45 @@ const FeaturesSection = () => {
   ];
 
   return (
-    <motion.section
-      ref={ref}
-      id="features"
-      className="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50"
-    >
+    <motion.section ref={ref} id="features" className="bg-slate-50 px-4 py-16">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        // initial={{ opacity: 0, y: 30 }}
-        // animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-        // transition={{ delay: 0.4, duration: 0.8 }}
-        className="max-w-7xl mx-auto"
+        className="mx-auto max-w-7xl"
       >
-        <header className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 space-y-4">
-            Everything You Need
+        <header className="mb-16 space-y-4 text-center">
+          <h2 className="space-y-4 text-4xl font-bold text-slate-900 sm:text-5xl">
+            Everything you need
           </h2>
 
-          <p className="text-lg text-slate-600 max-w-lg mx-auto">
+          <p className="mx-auto max-w-lg text-lg text-slate-600">
             Powerful features designed to help you understand and manage your
             finances better.
           </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <ul className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div
+              <li
                 key={index}
-                className="bg-white p-8 rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-lg transition-all duration-200"
+                className="rounded-xl border border-slate-200 bg-white p-8 transition-all duration-200 hover:border-slate-300 hover:shadow-lg"
               >
-                <div className="w-12 h-12 bg-slate-100 rounded-lg flex items-center justify-center mb-4">
-                  <Icon className="w-6 h-6 text-slate-700" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-2">
+                <span className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-slate-100">
+                  <Icon className="h-6 w-6 text-slate-700" />
+                </span>
+                <h3 className="mb-2 text-xl font-semibold text-slate-900">
                   {feature.title}
                 </h3>
-                <p className="text-slate-600 leading-relaxed">
+                <p className="leading-relaxed text-slate-600">
                   {feature.description}
                 </p>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </motion.div>
     </motion.section>
   );

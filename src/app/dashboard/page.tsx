@@ -14,13 +14,15 @@ export default async function Dashboard() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-8 space-y-8">
-      <h2 className="text-xl md:text-2xl font-semibold text-slate-800">
+    <div className="mx-auto max-w-7xl space-y-6 py-8">
+      <h2 className="text-xl font-semibold text-slate-800 md:text-2xl">
         Welcome back, {user.firstName}!
       </h2>
 
       <Balance />
+
       {transactions && transactions?.length > 0 && <KPIs />}
+
       <RecentTransactions />
     </div>
   );

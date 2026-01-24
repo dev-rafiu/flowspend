@@ -5,9 +5,9 @@ const Balance = async () => {
   const { balance } = await getUserBalance();
 
   return (
-    <div className="">
-      <p className="text-base text-slate-600 font-medium">Total Balance:</p>
-      <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mt-1">
+    <div className="space-y-2">
+      <p className="text-base font-medium text-slate-600">Total Balance:</p>
+      <h1 className="text-3xl font-bold text-slate-900 md:text-4xl">
         ${formatCurrency(balance ?? 0)}
       </h1>
     </div>

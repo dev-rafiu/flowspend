@@ -29,42 +29,38 @@ const HowItWorksSection = () => {
   ];
 
   return (
-    <motion.section
-      ref={ref}
-      id="how-it-works"
-      className="py-20 px-4 sm:px-6 lg:px-8"
-    >
+    <motion.section ref={ref} id="how-it-works" className="px-4 py-16">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="max-w-7xl mx-auto"
+        className="mx-auto max-w-7xl"
       >
-        <motion.header className="text-center mb-16 space-y-4">
-          <h2 className="text-4xl sm:text-5xl font-bold text-slate-900 space-y-4">
-            How It Works
+        <motion.header className="mb-16 space-y-4 text-center">
+          <h2 className="space-y-4 text-4xl font-bold text-slate-900 sm:text-5xl">
+            How it works
           </h2>
 
-          <p className="text-lg text-slate-600 max-w-80 mx-auto">
+          <p className="mx-auto max-w-80 text-lg text-slate-600">
             Get started in minutes and take control of your finances today.
           </p>
         </motion.header>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <ul className="mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3">
           {steps.map((item, index) => (
-            <div key={index} className="text-center">
-              <div className="text-6xl font-bold text-slate-200 mb-4">
+            <li key={index} className="text-center">
+              <span className="mb-4 text-6xl font-bold text-slate-200">
                 {item.step}
-              </div>
-              <h3 className="text-2xl font-semibold text-slate-900 mb-3">
+              </span>
+              <h3 className="mb-3 text-2xl font-semibold text-slate-900">
                 {item.title}
               </h3>
-              <p className="text-slate-600 leading-relaxed">
+              <p className="leading-relaxed text-slate-600">
                 {item.description}
               </p>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </motion.div>
     </motion.section>
   );
