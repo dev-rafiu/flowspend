@@ -45,30 +45,31 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
   };
 
   return (
-    <tr className="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+    <tr className="border-b border-slate-200 transition-colors hover:bg-slate-50">
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           {categoryInfo && (
             <div
               className={cn(
-                "shrink-0 w-8 h-8 rounded-full flex items-center justify-center",
+                "flex h-8 w-8 shrink-0 items-center justify-center rounded-full",
                 categoryInfo.bgColor
               )}
               title={categoryInfo.label}
             >
               {(() => {
                 const Icon = categoryInfo.icon;
-                return <Icon className={cn("w-4 h-4", categoryInfo.color)} />;
+                return <Icon className={cn("h-4 w-4", categoryInfo.color)} />;
               })()}
             </div>
           )}
+
           <div className="min-w-0">
             {categoryInfo && (
               <p className="text-sm font-medium text-slate-900">
                 {categoryInfo.label}
               </p>
             )}
-            <p className="text-sm text-slate-500 truncate">
+            <p className="truncate text-sm text-slate-500">
               {transaction.text}
             </p>
           </div>
@@ -82,7 +83,7 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
       <td className="px-4 py-3">
         <span
           className={cn(
-            "font-semibold text-sm whitespace-nowrap",
+            "text-sm font-semibold whitespace-nowrap",
             isIncome ? "text-green-600" : "text-red-600"
           )}
         >
@@ -102,7 +103,7 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
               className="h-8 w-8 text-slate-600 hover:text-slate-900"
               aria-label="Edit transaction"
             >
-              <Pencil className="w-4 h-4" />
+              <Pencil className="h-4 w-4" />
             </Button>
           </EditTransactionDialog>
 
@@ -114,10 +115,10 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+              className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700"
               aria-label="Delete transaction"
             >
-              <Trash2 className="w-4 h-4" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           </DeleteTransactionDialog>
         </div>

@@ -14,7 +14,7 @@ export default async function TransactionsPage() {
   const { transactions, error } = await getTransactions();
 
   return (
-    <div className="mx-auto max-w-7xl py-8 pb-24 md:py-12 md:pb-12">
+    <div className="mx-auto max-w-7xl px-4 py-8 pb-24 md:py-12 md:pb-12">
       <TransactionList transactions={transactions || []} error={error} />
       <FloatingAddButton />
     </div>

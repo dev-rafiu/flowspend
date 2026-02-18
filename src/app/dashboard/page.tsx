@@ -14,7 +14,7 @@ export default async function Dashboard() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-6 py-8">
+    <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
       <h2 className="text-xl font-semibold text-slate-800 md:text-2xl">
         Welcome back, {user.firstName}!
       </h2>

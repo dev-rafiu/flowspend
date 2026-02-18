@@ -8,7 +8,7 @@ import CategoryFilterChips from "./CategoryFilterChips";
 import TransactionResultsCount from "./TransactionResultsCount";
 import EmptyTransactionState from "./EmptyTransactionState";
 import EmptyFilteredState from "./EmptyFilteredState";
-import { Transaction } from "../types/Transaction";
+import { Transaction } from "../types";
 import {
   filterAndSortTransactions,
   groupTransactionsByDate,
@@ -64,12 +64,11 @@ function TransactionList({ transactions, error }: TransactionListProps) {
     );
   }
 
-  if (!transactions || transactions.length === 0) {
+  if (!transactions || transactions.length === 0)
     return <EmptyTransactionState />;
-  }
 
   return (
-    <div className="space-y-4 px-4 md:space-y-6 lg:px-0">
+    <div className="space-y-4 md:space-y-6 lg:px-0">
       <header className="flex items-center justify-between">
         <h2 className="text-lg font-semibold text-slate-900 sm:text-xl">
           Transactions

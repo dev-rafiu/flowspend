@@ -22,6 +22,7 @@ const CategoryFilterChips = ({
   return (
     <div className="scrollbar-hide -mx-1 flex gap-2 overflow-x-auto sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
       <Button
+        data-testid="category-filter-chip"
         variant={selectedCategory === "all" ? "default" : "outline"}
         size="sm"
         onClick={() => onCategoryChange("all")}
@@ -38,6 +39,7 @@ const CategoryFilterChips = ({
 
         return (
           <Button
+            data-testid="category-filter-chip"
             key={category}
             variant={isSelected ? "default" : "outline"}
             size="sm"

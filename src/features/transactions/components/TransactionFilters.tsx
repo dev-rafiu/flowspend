@@ -41,7 +41,7 @@ const TransactionFilters = ({
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       {/* search */}
-      <div className="relative">
+      <div data-testid="search-input" className="relative">
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-400" />
         <Input
           type="text"
@@ -65,8 +65,14 @@ const TransactionFilters = ({
       {/* filters row - better mobile layout */}
       <div className="grid grid-cols-2 gap-4 sm:flex-row">
         {/* category filter */}
-        <Select value={selectedCategory} onValueChange={onCategoryChange}>
-          <SelectTrigger className="h-10 w-full cursor-pointer rounded-full! text-sm lg:rounded-md!">
+        <Select
+          value={selectedCategory}
+          onValueChange={onCategoryChange}
+        >
+          <SelectTrigger
+            data-testid="category-select"
+            className="h-10 w-full cursor-pointer rounded-full! text-sm lg:rounded-md!"
+          >
             <div className="flex items-center gap-4">
               <Filter className="hidden h-3.5 w-3.5 text-slate-500 sm:block" />
               <SelectValue placeholder="All Categories" />
@@ -88,7 +94,10 @@ const TransactionFilters = ({
           value={sortBy}
           onValueChange={(value) => onSortChange(value as SortOption)}
         >
-          <SelectTrigger className="h-10 w-full cursor-pointer rounded-full! text-sm lg:rounded-md!">
+          <SelectTrigger
+            data-testid="sort-select"
+            className="h-10 w-full cursor-pointer rounded-full! text-sm lg:rounded-md!"
+          >
             <SelectValue placeholder="Sort by" />
           </SelectTrigger>
 

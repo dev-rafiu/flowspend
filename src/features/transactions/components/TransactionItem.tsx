@@ -37,11 +37,11 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
   return (
     <li
       className={cn(
-        "group relative bg-white rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-md transition-all duration-200 overflow-hidden"
+        "group relative overflow-hidden rounded-lg border border-slate-200 bg-white transition-all duration-200 hover:border-slate-300 hover:shadow-md"
       )}
     >
       <div className="flex items-center justify-between gap-4 p-3">
-        <div className="flex items-center gap-4 flex-1 min-w-0">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
           {categoryInfo &&
             (() => {
               const Icon = categoryInfo.icon;
@@ -49,33 +49,39 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
               return (
                 <div
                   className={cn(
-                    "shrink-0 w-10 h-10 rounded-full flex items-center justify-center",
+                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
                     categoryInfo.bgColor
                   )}
                   title={categoryInfo.label}
                 >
-                  <Icon className={cn("w-5 h-5", categoryInfo.color)} />
+                  <Icon className={cn("h-5 w-5", categoryInfo.color)} />
                 </div>
               );
             })()}
 
-          <div className="flex-1 min-w-0">
+          <div className="min-w-0 flex-1">
             {categoryInfo && (
-              <p className="text-sm text-slate-900 font-semibold">
+              <p
+                id="category-name"
+                className="text-sm font-semibold text-slate-900"
+              >
                 {categoryInfo.label}
               </p>
             )}
 
-            <p className="text-slate-500 truncate text-xs">
+            <p
+              id="transaction-text"
+              className="truncate text-xs text-slate-500"
+            >
               {transaction.text}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-4 shrink-0">
+        <div className="flex shrink-0 items-center gap-4">
           <span
             className={cn(
-              "font-semibold text-sm whitespace-nowrap",
+              "text-sm font-semibold whitespace-nowrap",
               isIncome ? "text-green-600" : "text-red-600"
             )}
           >
@@ -93,7 +99,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
                 className="h-8 w-8 text-slate-600 hover:text-slate-900"
                 aria-label="Edit transaction"
               >
-                <Pencil className="w-4 h-4" />
+                <Pencil className="h-4 w-4" />
               </Button>
             </EditTransactionDialog>
 
@@ -105,10 +111,10 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700"
                 aria-label="Delete transaction"
               >
-                <Trash2 className="w-4 h-4" />
+                <Trash2 className="h-4 w-4" />
               </Button>
             </DeleteTransactionDialog>
           </div>

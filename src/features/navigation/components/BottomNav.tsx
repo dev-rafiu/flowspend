@@ -22,8 +22,8 @@ const BottomNav = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 md:hidden safe-area-inset-bottom">
-      <div className="flex items-end justify-around h-16 px-2 pb-2">
+    <nav className="safe-area-inset-bottom fixed right-0 bottom-0 left-0 z-50 border-t border-slate-200 bg-white md:hidden">
+      <div className="flex h-16 items-end justify-around px-2 pb-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href;
@@ -33,14 +33,14 @@ const BottomNav = () => {
               key={item.href}
               href={item.href}
               className={cn(
-                "relative flex flex-col items-center justify-center flex-1 h-full transition-colors",
+                "relative flex h-full flex-1 flex-col items-center justify-center transition-colors",
                 isActive
                   ? "text-slate-900"
                   : "text-slate-500 hover:text-slate-700"
               )}
             >
               <Icon
-                className={cn("w-5 h-5 mb-1", isActive && "text-slate-900")}
+                className={cn("mb-1 h-5 w-5", isActive && "text-slate-900")}
               />
               <span
                 className={cn(
