@@ -1,8 +1,8 @@
 "use server";
 
-import { Transaction } from "../types/Transaction";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
+import { Transaction } from "../types";
 
 export default async function getRecentTransactions(
   limit: number = 5
