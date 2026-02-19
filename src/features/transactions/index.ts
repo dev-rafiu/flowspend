@@ -11,4 +11,3 @@ export { default as getUserBalance } from "./actions/getUserBalance";
 export { default as getKPIs } from "./actions/getKPIs";
 
 // types
-export type { Transaction } from "./types/Transaction";

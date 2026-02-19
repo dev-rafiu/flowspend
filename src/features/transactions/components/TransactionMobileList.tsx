@@ -1,5 +1,5 @@
 import TransactionItem from "./TransactionItem";
-import { Transaction } from "../types/Transaction";
+import { Transaction } from "../types";
 
 interface TransactionMobileListProps {
   groupedTransactions: Record<string, Transaction[]>;

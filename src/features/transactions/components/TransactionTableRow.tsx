@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Transaction } from "../types/Transaction";
+import { Transaction } from "../types";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";

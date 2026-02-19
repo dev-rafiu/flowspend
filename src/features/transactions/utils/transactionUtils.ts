@@ -1,4 +1,4 @@
-import { Transaction } from "../types/Transaction";
+import { Transaction } from "../types";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
 
 export type SortOption =
@@ -9,9 +9,7 @@ export type SortOption =
   | "category";
 
 export const getCategoryLabel = (categoryValue: string) => {
-  const expenseCat = EXPENSE_CATEGORIES.find(
-    (c) => c.value === categoryValue
-  );
+  const expenseCat = EXPENSE_CATEGORIES.find((c) => c.value === categoryValue);
   const incomeCat = INCOME_CATEGORIES.find((c) => c.value === categoryValue);
   return expenseCat?.label || incomeCat?.label || categoryValue;
 };

@@ -1,5 +1,5 @@
 import TransactionTableRow from "./TransactionTableRow";
-import { Transaction } from "../types/Transaction";
+import { Transaction } from "../types";
 
 interface TransactionTableProps {
   transactions: Transaction[];

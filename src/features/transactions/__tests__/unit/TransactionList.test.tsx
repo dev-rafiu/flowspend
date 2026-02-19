@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import TransactionList from "../../components/TransactionList";
 import { render, screen } from "@testing-library/react";
-import { Transaction } from "../../types/Transaction";
+import { Transaction } from "../../types";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({

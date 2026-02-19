@@ -2,7 +2,15 @@
 
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
-import { Transaction } from "../types";
+interface Transaction {
+  id: string;
+  text: string;
+  amount: number;
+  category?: string | null;
+  userId: string;
+  createdAt: Date;
+  transactionDate?: Date;
+}
 
 export default async function getRecentTransactions(
   limit: number = 5

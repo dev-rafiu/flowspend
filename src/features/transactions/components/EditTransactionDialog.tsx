@@ -10,7 +10,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import EditTransactionForm from "./EditTransactionForm";
-import { Transaction } from "../types/Transaction";
+import { Transaction } from "../types";
 
 interface EditTransactionDialogProps {
   transaction: Transaction;
