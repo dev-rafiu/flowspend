@@ -10,13 +10,11 @@ interface LogoProps {
 const Logo = ({ href, className, showText = true }: LogoProps) => {
   const logoContent = (
     <div className={cn("flex items-center space-x-2", className)}>
-      <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
-        <span className="text-white font-bold text-sm">FS</span>
+      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-800">
+        <span className="text-sm font-bold text-white">FS</span>
       </div>
       {showText && (
-        <span className="text-xl font-semibold text-slate-900">
-          FlowSpend
-        </span>
+        <span className="text-xl font-semibold text-slate-900">FlowSpend</span>
       )}
     </div>
   );
@@ -33,6 +31,3 @@ const Logo = ({ href, className, showText = true }: LogoProps) => {
 };
 
 export default Logo;
-
-
-

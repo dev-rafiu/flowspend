@@ -23,8 +23,8 @@ async function IncomeExpense() {
 
   if (error || !kpis) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-        <p className="text-red-800 text-sm">{error || "Failed to load KPIs"}</p>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+        <p className="text-sm text-red-800">{error || "Failed to load KPIs"}</p>
       </div>
     );
   }
@@ -120,23 +120,23 @@ async function IncomeExpense() {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {kpiCards.map((kpi) => {
         const Icon = kpi.icon;
 
         return (
           <Card
             key={kpi.title}
-            className={`hover:shadow-lg transition-all duration-200 ${kpi.cardBg}`}
+            className={`transition-all duration-200 hover:shadow-lg ${kpi.cardBg}`}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-slate-700">
                 {kpi.title}
               </CardTitle>
               <div
-                className={`${kpi.iconBg} rounded-full p-2 flex items-center justify-center`}
+                className={`${kpi.iconBg} flex items-center justify-center rounded-full p-2`}
               >
-                <Icon className={`w-4 h-4 ${kpi.iconColor}`} />
+                <Icon className={`h-4 w-4 ${kpi.iconColor}`} />
               </div>
             </CardHeader>
 
@@ -150,7 +150,7 @@ async function IncomeExpense() {
               </CardDescription>
 
               {kpi.trend && (
-                <p className="text-xs text-slate-600 mt-1 font-medium">
+                <p className="mt-1 text-xs font-medium text-slate-600">
                   {kpi.trend}
                 </p>
               )}

@@ -10,13 +10,11 @@ interface LogoLargeProps {
 const LogoLarge = ({ href, className, showText = true }: LogoLargeProps) => {
   const logoContent = (
     <div className={cn("flex items-center space-x-4", className)}>
-      <div className="w-16 h-16 bg-slate-800 rounded-lg flex items-center justify-center">
-        <span className="text-white font-bold text-2xl">FS</span>
+      <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-slate-800">
+        <span className="text-2xl font-bold text-white">FS</span>
       </div>
       {showText && (
-        <span className="text-4xl font-semibold text-slate-900">
-          FlowSpend
-        </span>
+        <span className="text-4xl font-semibold text-slate-900">FlowSpend</span>
       )}
     </div>
   );
@@ -33,6 +31,3 @@ const LogoLarge = ({ href, className, showText = true }: LogoLargeProps) => {
 };
 
 export default LogoLarge;
-
-
-
