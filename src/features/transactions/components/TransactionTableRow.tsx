@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Transaction } from "../types";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
+import { getCategoryDisplay } from "@/features/categories/utils/categoryDisplay";
 import { Pencil, Trash2 } from "lucide-react";
 import EditTransactionDialog from "./EditTransactionDialog";
 import DeleteTransactionDialog from "./DeleteTransactionDialog";
@@ -15,16 +15,7 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
   const amount = Math.abs(transaction.amount);
   const router = useRouter();
 
-  const getCategoryInfo = (category: string | null | undefined) => {
-    if (!category) return null;
-
-    return (
-      EXPENSE_CATEGORIES.find((cat) => cat.value === category) ||
-      INCOME_CATEGORIES.find((cat) => cat.value === category)
-    );
-  };
-
-  const categoryInfo = getCategoryInfo(transaction.category);
+  const categoryInfo = getCategoryDisplay(transaction.category);
 
   const handleDeleteSuccess = () => {
     router.refresh();
@@ -45,7 +36,7 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
   };
 
   return (
-    <tr className="border-b border-slate-200 transition-colors hover:bg-slate-50">
+    <tr className="border-b border-slate-200 dark:border-slate-800 transition-colors hover:bg-slate-50 dark:bg-slate-900">
       <td className="px-4 py-3">
         <div className="flex items-center gap-3">
           {categoryInfo && (
@@ -65,18 +56,18 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
 
           <div className="min-w-0">
             {categoryInfo && (
-              <p className="text-sm font-medium text-slate-900">
+              <p className="text-sm font-medium text-slate-900 dark:text-slate-100">
                 {categoryInfo.label}
               </p>
             )}
-            <p className="truncate text-sm text-slate-500">
+            <p className="truncate text-sm text-slate-500 dark:text-slate-400">
               {transaction.text}
             </p>
           </div>
         </div>
       </td>
 
-      <td className="px-4 py-3 text-sm text-slate-600">
+      <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
         {formatDate(transaction.createdAt)}
       </td>
 
@@ -100,7 +91,7 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-slate-600 hover:text-slate-900"
+              className="h-8 w-8 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100"
               aria-label="Edit transaction"
             >
               <Pencil className="h-4 w-4" />

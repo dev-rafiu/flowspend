@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import addTransaction from "../actions/addTransaction";
 import { DrawerClose, DrawerFooter } from "@/components/ui/drawer";
 import { DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -13,8 +15,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowUp, ArrowDown } from "lucide-react";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useUserCategories } from "@/features/categories/hooks/useUserCategories";
+import {
+  buildPickerOptions,
+  findPickerOption,
+} from "@/features/categories/utils/pickerOptions";
 
 interface AddTransactionFormProps {
   onSuccess?: () => void;
@@ -33,7 +40,15 @@ const AddTransactionForm = ({
     const today = new Date();
     return today.toISOString().split("T")[0];
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const userCategories = useUserCategories();
+  const pickerOptions = buildPickerOptions(transactionType, userCategories);
+  const selectedOption = selectedCategory
+    ? findPickerOption(selectedCategory, transactionType, userCategories)
+    : undefined;
   const router = useRouter();
+  const today = new Date().toISOString().split("T")[0];
 
   const handleSubmit = async (formData: FormData) => {
     const text = formData.get("text") as string;
@@ -45,7 +60,8 @@ const AddTransactionForm = ({
       return;
     }
 
-    // Adjust amount based on transaction type
+    setIsSubmitting(true);
+
     const finalAmount =
       transactionType === "expense" ? -Math.abs(amount) : Math.abs(amount);
 
@@ -53,25 +69,26 @@ const AddTransactionForm = ({
     formDataToSend.append("text", text);
     formDataToSend.append("amount", finalAmount.toString());
     formDataToSend.append("date", date);
-
-    // Add category for both income and expenses
     if (selectedCategory) {
       formDataToSend.append("category", selectedCategory);
     }
 
     const { error } = await addTransaction(formDataToSend);
 
+    setIsSubmitting(false);
+
     if (error) {
       toast.error(error);
-    } else {
-      toast.success("Transaction added successfully");
-      setSelectedCategory("");
-      router.refresh();
-      onSuccess?.();
+      return;
     }
+
+    toast.success("Transaction added");
+    setSelectedCategory("");
+    router.refresh();
+    onSuccess?.();
   };
 
-  const handleTransactionTypeChange = (type: "income" | "expense") => {
+  const handleTypeChange = (type: "income" | "expense") => {
     setTransactionType(type);
     setSelectedCategory("");
   };
@@ -79,169 +96,183 @@ const AddTransactionForm = ({
   return (
     <form
       action={handleSubmit}
-      className={isDialog ? "space-y-4" : "space-y-4 px-4"}
+      className={cn("space-y-4", !isDialog && "px-4")}
     >
-      {/* transaction type toggle */}
-      <div className="flex gap-2">
-        <button
-          type="button"
-          onClick={() => handleTransactionTypeChange("expense")}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 transition-all ${
-            transactionType === "expense"
-              ? "border-red-300 bg-red-50 text-red-700"
-              : "border-slate-200 bg-white text-slate-600"
-          }`}
-        >
-          <ArrowDown className="h-4 w-4" />
-          <span className="font-medium">Expense</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => handleTransactionTypeChange("income")}
-          className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 transition-all ${
-            transactionType === "income"
-              ? "border-green-300 bg-green-50 text-green-700"
-              : "border-slate-200 bg-white text-slate-600"
-          }`}
-        >
-          <ArrowUp className="h-4 w-4" />
-          <span className="font-medium">Income</span>
-        </button>
+      {/* type toggle */}
+      <div
+        role="radiogroup"
+        aria-label="Transaction type"
+        className="inline-flex w-full rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-slate-800 dark:bg-slate-900"
+      >
+        {(
+          [
+            {
+              value: "expense" as const,
+              label: "Expense",
+              Icon: ArrowDown,
+              activeText: "text-red-600 dark:text-red-400",
+            },
+            {
+              value: "income" as const,
+              label: "Income",
+              Icon: ArrowUp,
+              activeText: "text-emerald-600 dark:text-emerald-400",
+            },
+          ]
+        ).map(({ value, label, Icon, activeText }) => {
+          const isActive = transactionType === value;
+          return (
+            <button
+              key={value}
+              type="button"
+              role="radio"
+              aria-checked={isActive}
+              onClick={() => handleTypeChange(value)}
+              className={cn(
+                "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
+                isActive
+                  ? cn(
+                      "bg-white shadow-sm dark:bg-slate-800",
+                      activeText
+                    )
+                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+              )}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* date picker */}
-      <div className="space-y-2">
-        <label htmlFor="date" className="text-sm font-medium text-slate-700">
-          Date
+      {/* amount */}
+      <div className="space-y-1.5">
+        <label
+          htmlFor="amount"
+          className="text-xs font-medium text-slate-600 dark:text-slate-400"
+        >
+          Amount
         </label>
-        <input
-          type="date"
-          name="date"
-          id="date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          required
-          max={new Date().toISOString().split("T")[0]}
-          className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-slate-800 focus:outline-none"
-        />
+        <div className="relative">
+          <span className="absolute top-1/2 left-3 -translate-y-1/2 text-sm text-slate-500 dark:text-slate-400">
+            $
+          </span>
+          <Input
+            type="number"
+            name="amount"
+            id="amount"
+            step="0.01"
+            min="0"
+            placeholder="0.00"
+            inputMode="decimal"
+            required
+            className="pl-7"
+          />
+        </div>
       </div>
 
-      {/* category selector - for both income and expenses */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-700">Category</label>
-
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger className="h-12 w-full">
-            <SelectValue placeholder="Select a category">
-              {selectedCategory &&
-                (() => {
-                  const categories =
-                    transactionType === "expense"
-                      ? EXPENSE_CATEGORIES
-                      : INCOME_CATEGORIES;
-                  const selected = categories.find(
-                    (cat) => cat.value === selectedCategory
-                  );
-                  if (!selected) return null;
-                  const Icon = selected.icon;
-                  return (
-                    <span className="flex items-center gap-2">
-                      <Icon className={`h-5 w-5 ${selected.color}`} />
-                      <span>{selected.label}</span>
-                    </span>
-                  );
-                })()}
-            </SelectValue>
-          </SelectTrigger>
-
-          <SelectContent>
-            {(transactionType === "expense"
-              ? EXPENSE_CATEGORIES
-              : INCOME_CATEGORIES
-            ).map((category) => {
-              const Icon = category.icon;
-
-              return (
-                <SelectItem key={category.value} value={category.value}>
-                  <span className="flex items-center gap-2">
-                    <Icon className={`h-5 w-5 ${category.color}`} />
-                    <span>{category.label}</span>
-                  </span>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-        <input type="hidden" name="category" value={selectedCategory} />
-      </div>
-
-      {/* description field */}
-      <div className="space-y-2">
-        <label htmlFor="text" className="text-sm font-medium text-slate-700">
+      {/* description */}
+      <div className="space-y-1.5">
+        <label
+          htmlFor="text"
+          className="text-xs font-medium text-slate-600 dark:text-slate-400"
+        >
           Description
         </label>
-        <input
+        <Input
           type="text"
           name="text"
           id="text"
-          placeholder="e.g., groceries, salary, etc."
+          placeholder="e.g. Groceries"
+          maxLength={80}
           required
-          className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-slate-800 focus:outline-none"
         />
       </div>
 
-      {/* amount field */}
-      <div className="space-y-2">
-        <label htmlFor="amount" className="text-sm font-medium text-slate-700">
-          Amount
-        </label>
-        <input
-          type="number"
-          name="amount"
-          id="amount"
-          step="0.01"
-          min="0"
-          placeholder="0.00"
-          required
-          className="w-full rounded-lg border border-slate-300 py-3 pr-4 pl-8 focus:border-transparent focus:ring-2 focus:ring-slate-800 focus:outline-none"
-        />
+      {/* category + date */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
+            Category
+          </label>
+          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+            <SelectTrigger className="h-9 w-full">
+              <SelectValue placeholder="Select">
+                {selectedOption ? (
+                  <span className="flex items-center gap-2">
+                    <selectedOption.Icon
+                      className={cn("h-4 w-4", selectedOption.iconClass)}
+                    />
+                    <span className="truncate">{selectedOption.label}</span>
+                  </span>
+                ) : null}
+              </SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              {pickerOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  <span className="flex items-center gap-2">
+                    <option.Icon
+                      className={cn("h-4 w-4", option.iconClass)}
+                    />
+                    <span>{option.label}</span>
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <input type="hidden" name="category" value={selectedCategory} />
+        </div>
+
+        <div className="space-y-1.5">
+          <label
+            htmlFor="date"
+            className="text-xs font-medium text-slate-600 dark:text-slate-400"
+          >
+            Date
+          </label>
+          <Input
+            type="date"
+            name="date"
+            id="date"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
+            max={today}
+            required
+          />
+        </div>
       </div>
 
       {isDialog ? (
-        <DialogFooter className="flex-col gap-2 sm:flex-row">
-          <button
+        <DialogFooter className="gap-2">
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={onSuccess}
-            className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 font-medium text-slate-700 transition-all duration-200 hover:border-slate-400 hover:text-slate-900 sm:flex-1"
+            disabled={isSubmitting}
           >
             Cancel
-          </button>
-
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-slate-800 px-4 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:bg-slate-900 hover:shadow-lg sm:flex-1"
-          >
-            Add Transaction
-          </button>
+          </Button>
+          <Button type="submit" size="sm" disabled={isSubmitting}>
+            {isSubmitting ? "Adding..." : "Add transaction"}
+          </Button>
         </DialogFooter>
       ) : (
-        <DrawerFooter>
+        <DrawerFooter className="flex-row justify-end gap-2 px-0">
           <DrawerClose asChild>
-            <button
+            <Button
               type="button"
-              className="w-full rounded-lg border border-slate-300 bg-white px-4 py-3 font-medium text-slate-700 transition-all duration-200 hover:border-slate-400 hover:text-slate-900"
+              variant="outline"
+              size="sm"
+              disabled={isSubmitting}
             >
               Cancel
-            </button>
+            </Button>
           </DrawerClose>
-
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-slate-800 px-4 py-3 font-semibold text-white shadow-md transition-all duration-200 hover:bg-slate-900 hover:shadow-lg"
-          >
-            Add Transaction
-          </button>
+          <Button type="submit" size="sm" disabled={isSubmitting}>
+            {isSubmitting ? "Adding..." : "Add transaction"}
+          </Button>
         </DrawerFooter>
       )}
     </form>

@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Transaction } from "../types";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
+import { getCategoryDisplay } from "@/features/categories/utils/categoryDisplay";
 import { Pencil, Trash2 } from "lucide-react";
 import EditTransactionDialog from "./EditTransactionDialog";
 import DeleteTransactionDialog from "./DeleteTransactionDialog";
@@ -15,16 +15,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
   const amount = Math.abs(transaction.amount);
   const router = useRouter();
 
-  const getCategoryInfo = (category: string | null | undefined) => {
-    if (!category) return null;
-
-    return (
-      EXPENSE_CATEGORIES.find((cat) => cat.value === category) ||
-      INCOME_CATEGORIES.find((cat) => cat.value === category)
-    );
-  };
-
-  const categoryInfo = getCategoryInfo(transaction.category);
+  const categoryInfo = getCategoryDisplay(transaction.category);
 
   const handleDeleteSuccess = () => {
     router.refresh();
@@ -37,7 +28,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
   return (
     <li
       className={cn(
-        "group relative overflow-hidden rounded-lg border border-slate-200 bg-white transition-all duration-200 hover:border-slate-300 hover:shadow-md"
+        "group relative overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-all duration-200 hover:border-slate-300 hover:shadow-md"
       )}
     >
       <div className="flex items-center justify-between gap-4 p-3">
@@ -63,7 +54,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
             {categoryInfo && (
               <p
                 id="category-name"
-                className="text-sm font-semibold text-slate-900"
+                className="text-sm font-semibold text-slate-900 dark:text-slate-100"
               >
                 {categoryInfo.label}
               </p>
@@ -71,7 +62,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
 
             <p
               id="transaction-text"
-              className="truncate text-xs text-slate-500"
+              className="truncate text-xs text-slate-500 dark:text-slate-400"
             >
               {transaction.text}
             </p>
@@ -96,7 +87,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8 text-slate-600 hover:text-slate-900"
+                className="h-8 w-8 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100"
                 aria-label="Edit transaction"
               >
                 <Pencil className="h-4 w-4" />
