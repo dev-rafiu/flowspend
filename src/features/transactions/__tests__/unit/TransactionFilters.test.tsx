@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import TransactionFilters from "../../components/TransactionFilters";
 import { render, screen } from "@testing-library/react";
-import { SortOption } from "../../utils/transactionUtils";
+import { SortOption } from "../../types";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({

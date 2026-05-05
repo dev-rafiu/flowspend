@@ -12,7 +12,7 @@ const TransactionResultsCount = ({
   if (!hasFilters) return null;
 
   return (
-    <p className="px-1 text-xs text-slate-600 sm:px-0 sm:text-sm">
+    <p className="px-1 text-xs text-slate-600 dark:text-slate-400 sm:px-0 sm:text-sm">
       Showing {filteredCount} of {totalCount} transactions
     </p>
   );

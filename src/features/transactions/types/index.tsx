@@ -7,3 +7,15 @@ export interface Transaction {
   createdAt: Date;
   transactionDate?: Date;
 }
+
+export type SortOption =
+  | "date-desc"
+  | "date-asc"
+  | "amount-desc"
+  | "amount-asc"
+  | "category";
+
+export interface TransactionsPage {
+  transactions: Transaction[];
+  nextCursor: string | null;
+}

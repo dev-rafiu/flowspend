@@ -1,10 +1,10 @@
 const EmptyTransactionState = () => {
   return (
     <div className="flex min-h-[calc(100vh-200px)] w-full items-center justify-center px-4 lg:px-0">
-      <div className="w-full max-w-sm space-y-4 rounded-lg border border-slate-200 bg-slate-50 p-10 text-center">
+      <div className="w-full max-w-sm space-y-4 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 p-10 text-center">
         <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-slate-200">
           <svg
-            className="h-9 w-9 text-slate-400"
+            className="h-9 w-9 text-slate-400 dark:text-slate-500"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -19,11 +19,11 @@ const EmptyTransactionState = () => {
         </span>
 
         <div className="space-y-2">
-          <p className="text-lg font-semibold text-slate-900">
+          <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
             No transactions yet
           </p>
 
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Start tracking your expenses and income by adding your first
             transaction
           </p>

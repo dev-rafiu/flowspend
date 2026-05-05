@@ -9,118 +9,68 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import {
-  ArrowUp,
-  ArrowDown,
-  Wallet,
-  TrendingUp,
-  Receipt,
-  DollarSign,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, TrendingUp } from "lucide-react";
 
 async function IncomeExpense() {
   const { kpis, error } = await getKPIs();
 
   if (error || !kpis) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-        <p className="text-sm text-red-800">{error || "Failed to load KPIs"}</p>
+      <div className="rounded-lg border border-red-200 bg-red-50 p-4 dark:border-red-900/50 dark:bg-red-950/40">
+        <p className="text-sm text-red-800 dark:text-red-300">
+          {error || "Failed to load KPIs"}
+        </p>
       </div>
     );
   }
 
-  const {
-    income,
-    expense,
-    netBalance,
-    totalTransactions,
-    averageTransaction,
-    monthlyIncome,
-    monthlyExpense,
-  } = kpis;
+  const { monthlyIncome, monthlyExpense } = kpis;
+  const monthlyNet = monthlyIncome - monthlyExpense;
+  const monthLabel = new Date().toLocaleString("default", { month: "long" });
 
   const kpiCards = [
     {
-      title: "Total Income",
-      value: `$${formatCurrency(income)}`,
-      description: "All time income",
+      title: "Income",
+      value: `$${formatCurrency(monthlyIncome)}`,
+      description: `${monthLabel} income`,
       icon: ArrowUp,
-      iconColor: "text-green-600",
-      iconBg: "bg-green-100",
-      cardBg: "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200",
-      trend:
-        monthlyIncome > 0
-          ? `$${formatCurrency(monthlyIncome)} this month`
-          : undefined,
-    },
-
-    {
-      title: "Total Expenses",
-      value: `$${formatCurrency(expense)}`,
-      description: "All time expenses",
-      icon: ArrowDown,
-      iconColor: "text-red-600",
-      iconBg: "bg-red-100",
-      cardBg: "bg-gradient-to-br from-red-50 to-rose-50 border-red-200",
-      trend:
-        monthlyExpense > 0
-          ? `$${formatCurrency(monthlyExpense)} this month`
-          : undefined,
-    },
-
-    {
-      title: "Net Balance",
-      value: `$${formatCurrency(netBalance)}`,
-      description: "Income minus expenses",
-      icon: Wallet,
-      iconColor: netBalance >= 0 ? "text-indigo-600" : "text-orange-600",
-      iconBg: netBalance >= 0 ? "bg-indigo-100" : "bg-orange-100",
+      iconColor: "text-green-600 dark:text-green-400",
+      iconBg: "bg-green-100 dark:bg-green-900/40",
       cardBg:
-        netBalance >= 0
-          ? "bg-gradient-to-br from-indigo-50 to-blue-50 border-indigo-200"
-          : "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200",
-      trend: netBalance >= 0 ? "Positive" : "Negative",
+        "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-950/40 dark:to-emerald-950/40 dark:border-green-900/50",
     },
-
     {
-      title: "Total Transactions",
-      value: totalTransactions.toString(),
-      description: "All transactions",
-      icon: Receipt,
-      iconColor: "text-blue-600",
-      iconBg: "bg-blue-100",
-      cardBg: "bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200",
+      title: "Expenses",
+      value: `$${formatCurrency(monthlyExpense)}`,
+      description: `${monthLabel} expenses`,
+      icon: ArrowDown,
+      iconColor: "text-red-600 dark:text-red-400",
+      iconBg: "bg-red-100 dark:bg-red-900/40",
+      cardBg:
+        "bg-gradient-to-br from-red-50 to-rose-50 border-red-200 dark:from-red-950/40 dark:to-rose-950/40 dark:border-red-900/50",
     },
-
     {
-      title: "Average Transaction",
-      value: `$${formatCurrency(averageTransaction)}`,
-      description: "Average transaction amount",
-      icon: DollarSign,
-      iconColor: "text-purple-600",
-      iconBg: "bg-purple-100",
-      cardBg: "bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200",
-    },
-
-    {
-      title: "Monthly Net",
-      value: `$${formatCurrency(monthlyIncome - monthlyExpense)}`,
-      description: "This month's balance",
+      title: "Net",
+      value: `${monthlyNet < 0 ? "-" : ""}$${formatCurrency(Math.abs(monthlyNet))}`,
+      description: `${monthLabel} balance`,
       icon: TrendingUp,
       iconColor:
-        monthlyIncome - monthlyExpense >= 0 ? "text-teal-600" : "text-pink-600",
+        monthlyNet >= 0
+          ? "text-indigo-600 dark:text-indigo-400"
+          : "text-orange-600 dark:text-orange-400",
       iconBg:
-        monthlyIncome - monthlyExpense >= 0 ? "bg-teal-100" : "bg-pink-100",
+        monthlyNet >= 0
+          ? "bg-indigo-100 dark:bg-indigo-900/40"
+          : "bg-orange-100 dark:bg-orange-900/40",
       cardBg:
-        monthlyIncome - monthlyExpense >= 0
-          ? "bg-gradient-to-br from-teal-50 to-cyan-50 border-teal-200"
-          : "bg-gradient-to-br from-pink-50 to-fuchsia-50 border-pink-200",
-      trend: `${new Date().toLocaleString("default", { month: "long" })}`,
+        monthlyNet >= 0
+          ? "bg-gradient-to-br from-indigo-50 to-blue-50 border-indigo-200 dark:from-indigo-950/40 dark:to-blue-950/40 dark:border-indigo-900/50"
+          : "bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 dark:from-orange-950/40 dark:to-amber-950/40 dark:border-orange-900/50",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {kpiCards.map((kpi) => {
         const Icon = kpi.icon;
 
@@ -130,7 +80,7 @@ async function IncomeExpense() {
             className={`transition-all duration-200 hover:shadow-lg ${kpi.cardBg}`}
           >
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-700">
+              <CardTitle className="text-sm font-medium text-slate-700 dark:text-slate-200">
                 {kpi.title}
               </CardTitle>
               <div
@@ -141,19 +91,13 @@ async function IncomeExpense() {
             </CardHeader>
 
             <CardContent>
-              <div className="text-2xl font-bold text-slate-900">
+              <div className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                 {kpi.value}
               </div>
 
-              <CardDescription className="mt-1 text-xs text-slate-600">
+              <CardDescription className="mt-1 text-xs text-slate-600 dark:text-slate-400">
                 {kpi.description}
               </CardDescription>
-
-              {kpi.trend && (
-                <p className="mt-1 text-xs font-medium text-slate-600">
-                  {kpi.trend}
-                </p>
-              )}
             </CardContent>
           </Card>
         );

@@ -1,6 +1,5 @@
 "use server";
 
-import { Transaction } from "@/generated/client";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 
@@ -19,72 +18,79 @@ export default async function getKPIs(): Promise<{
   error?: string;
 }> {
   const { userId } = await auth();
-
-  if (!userId) {
-    return { error: "User not found" };
-  }
+  if (!userId) return { error: "User not found" };
 
   try {
-    const transactions = await db.transaction.findMany({
-      where: { userId },
-    });
-
-    const income = transactions
-      .filter((transaction) => transaction.amount > 0)
-      .reduce((acc, transaction) => acc + transaction.amount, 0);
-
-    const expense = Math.abs(
-      transactions
-        .filter((transaction) => transaction.amount < 0)
-        .reduce((acc, transaction) => acc + transaction.amount, 0)
-    );
-
-    const netBalance = income - expense;
-
-    const totalTransactions = transactions.length;
-
-    const averageTransaction =
-      totalTransactions > 0
-        ? Math.abs(
-            transactions.reduce((acc, t) => acc + Math.abs(t.amount), 0) /
-              totalTransactions
-          )
-        : 0;
-
-    // get current month transactions
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-
-    const monthlyTransactions = transactions.filter((transaction) => {
-      const transactionDate = (transaction as Transaction).transactionDate
-        ? new Date((transaction as Transaction).transactionDate)
-        : new Date(transaction.createdAt);
-      return transactionDate >= startOfMonth && transactionDate <= endOfMonth;
-    });
-
-    const monthlyIncome = monthlyTransactions
-      .filter((transaction) => transaction.amount > 0)
-      .reduce((acc, transaction) => acc + transaction.amount, 0);
-
-    const monthlyExpense = Math.abs(
-      monthlyTransactions
-        .filter((transaction) => transaction.amount < 0)
-        .reduce((acc, transaction) => acc + transaction.amount, 0)
+    const endOfMonth = new Date(
+      now.getFullYear(),
+      now.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
     );
+
+    const [
+      incomeAgg,
+      expenseAgg,
+      countAgg,
+      monthlyIncomeAgg,
+      monthlyExpenseAgg,
+    ] = await Promise.all([
+      db.transaction.aggregate({
+        where: { userId, amount: { gt: 0 } },
+        _sum: { amount: true },
+      }),
+      db.transaction.aggregate({
+        where: { userId, amount: { lt: 0 } },
+        _sum: { amount: true },
+      }),
+      db.transaction.aggregate({
+        where: { userId },
+        _count: { _all: true },
+        _sum: { amount: true },
+      }),
+      db.transaction.aggregate({
+        where: {
+          userId,
+          amount: { gt: 0 },
+          transactionDate: { gte: startOfMonth, lte: endOfMonth },
+        },
+        _sum: { amount: true },
+      }),
+      db.transaction.aggregate({
+        where: {
+          userId,
+          amount: { lt: 0 },
+          transactionDate: { gte: startOfMonth, lte: endOfMonth },
+        },
+        _sum: { amount: true },
+      }),
+    ]);
+
+    const income = incomeAgg._sum.amount ?? 0;
+    const expense = Math.abs(expenseAgg._sum.amount ?? 0);
+    const totalTransactions = countAgg._count._all;
+    const grossMovement = Math.abs(income) + expense;
+    const averageTransaction =
+      totalTransactions > 0 ? grossMovement / totalTransactions : 0;
+    const monthlyIncome = monthlyIncomeAgg._sum.amount ?? 0;
+    const monthlyExpense = Math.abs(monthlyExpenseAgg._sum.amount ?? 0);
 
     return {
       kpis: {
         income,
         expense,
-        netBalance,
+        netBalance: income - expense,
         totalTransactions,
         averageTransaction,
         monthlyIncome,
         monthlyExpense,
       },
     };
-  } catch (error) {
-    return { error: "Failed to get KPIs: " + error };
+  } catch {
+    return { error: "Failed to load KPIs" };
   }
 }

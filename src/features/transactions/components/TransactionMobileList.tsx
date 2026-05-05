@@ -16,7 +16,7 @@ const TransactionMobileList = ({
         .sort(([a], [b]) => new Date(b).getTime() - new Date(a).getTime())
         .map(([dateKey, dateTransactions]) => (
           <div key={dateKey} className="flex flex-col gap-2">
-            <h4 className="px-1 text-xs font-medium tracking-wide text-slate-600 uppercase sm:px-0">
+            <h4 className="px-1 text-xs font-medium tracking-wide text-slate-600 dark:text-slate-400 uppercase sm:px-0">
               {formatGroupDate(dateKey)}
             </h4>
 

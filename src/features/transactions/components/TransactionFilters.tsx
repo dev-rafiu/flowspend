@@ -9,13 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-type SortOption =
-  | "date-desc"
-  | "date-asc"
-  | "amount-desc"
-  | "amount-asc"
-  | "category";
+import { SortOption } from "../types";
 
 interface TransactionFiltersProps {
   searchQuery: string;
@@ -42,7 +36,7 @@ const TransactionFilters = ({
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
       {/* search */}
       <div data-testid="search-input" className="relative">
-        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-400" />
+        <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-400 dark:text-slate-500" />
         <Input
           type="text"
           placeholder="Search transactions..."
@@ -54,7 +48,7 @@ const TransactionFilters = ({
         {searchQuery && (
           <button
             onClick={() => onSearchChange("")}
-            className="absolute top-1/2 right-3 -translate-y-1/2 transform text-slate-400 hover:text-slate-600"
+            className="absolute top-1/2 right-3 -translate-y-1/2 transform text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400"
             aria-label="Clear search"
           >
             <X className="h-4 w-4" />
@@ -71,7 +65,7 @@ const TransactionFilters = ({
             className="h-10 w-full cursor-pointer rounded-full! text-sm lg:rounded-md!"
           >
             <div className="flex items-center gap-4">
-              <Filter className="hidden h-3.5 w-3.5 text-slate-500 sm:block" />
+              <Filter className="hidden h-3.5 w-3.5 text-slate-500 dark:text-slate-400 sm:block" />
               <SelectValue placeholder="All Categories" />
             </div>
           </SelectTrigger>
