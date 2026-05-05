@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import { Toaster } from "sonner";
+import ThemeProvider from "@/components/ThemeProvider";
+import { SidebarProvider } from "@/features/navigation/components/SidebarContext";
 import ConditionalHeader from "@/features/auth/components/ConditionalHeader";
 import ConditionalBottomNav from "@/features/navigation/components/ConditionalBottomNav";
 import ConditionalSidebar from "@/features/navigation/components/ConditionalSidebar";
@@ -54,19 +56,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="scroll-smooth">
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
-        <ClerkProvider>
-          <div className="dashboard-grid-container relative">
-            <ConditionalSidebar />
-            <ConditionalHeader />
-            <main className="dashboard-main overflow-y-auto lg:mb-0">
-              {children}
-            </main>
-            <ConditionalBottomNav />
-          </div>
-          <Toaster position="top-right" richColors />
-        </ClerkProvider>
+        <ThemeProvider>
+          <ClerkProvider>
+            <SidebarProvider>
+              <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+                <ConditionalSidebar />
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <ConditionalHeader />
+                  <main className="flex-1">{children}</main>
+                </div>
+              </div>
+              <ConditionalBottomNav />
+            </SidebarProvider>
+            <Toaster position="top-right" richColors theme="system" />
+          </ClerkProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
