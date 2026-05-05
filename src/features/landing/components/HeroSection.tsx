@@ -43,7 +43,6 @@ const HeroSection = () => {
         </SignInButton>
       </motion.div>
 
-      {/* dashboard mockup */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
@@ -51,7 +50,7 @@ const HeroSection = () => {
         className="relative mx-auto hidden h-80 w-240 rounded-lg border shadow-lg lg:block lg:h-140"
       >
         <Image
-          src="/dashboard-mockup.png"
+          src="/dashboard-mockup.webp"
           alt="Dashboard Mockup"
           className="h-full w-full object-contain"
           sizes=""
