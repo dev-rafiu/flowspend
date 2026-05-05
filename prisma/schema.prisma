@@ -16,6 +16,19 @@ imageUrl String?
 createdAt DateTime @default(now())
 updatedAt DateTime @updatedAt
 transactions Transaction[]
+categories Category[]
+}
+
+model Category {
+id String   @id @default(uuid())
+userId String
+label String
+type String   // "expense" | "income"
+createdAt DateTime @default(now())
+user User @relation(fields: [userId], references: [clerkUserId], onDelete: Cascade)
+
+@@unique([userId, label, type])
+@@index([userId])
 }
 
 model Transaction {

@@ -130,6 +130,14 @@ exports.Prisma.UserScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.CategoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  label: 'label',
+  type: 'type',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.TransactionScalarFieldEnum = {
   id: 'id',
   text: 'text',
@@ -158,6 +166,7 @@ exports.Prisma.NullsOrder = {
 
 exports.Prisma.ModelName = {
   User: 'User',
+  Category: 'Category',
   Transaction: 'Transaction'
 };
 
