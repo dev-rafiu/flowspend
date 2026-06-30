@@ -30,49 +30,41 @@ const EditTransactionForm = ({
   transaction,
   onSuccess,
 }: EditTransactionFormProps) => {
-  const isIncome = transaction.amount > 0;
   const [transactionType, setTransactionType] = useState<"income" | "expense">(
-    isIncome ? "income" : "expense"
+    transaction.type
   );
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    transaction.category || ""
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>(
+    transaction.categoryId ?? ""
   );
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const date = transaction.transactionDate || transaction.createdAt;
     return new Date(date).toISOString().split("T")[0];
   });
-  const [text, setText] = useState(transaction.text);
-  const [amount, setAmount] = useState(Math.abs(transaction.amount).toString());
+  const [note, setNote] = useState(transaction.note ?? "");
+  const [amount, setAmount] = useState(transaction.amount.toString());
   const router = useRouter();
   const userCategories = useUserCategories();
   const pickerOptions = buildPickerOptions(transactionType, userCategories);
-  const selectedOption = selectedCategory
-    ? findPickerOption(selectedCategory, transactionType, userCategories)
+  const selectedOption = selectedCategoryId
+    ? findPickerOption(selectedCategoryId, transactionType, userCategories)
     : undefined;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!text || !amount || !selectedDate) {
+    const parsedAmount = parseFloat(amount);
+    if (!note.trim() || !Number.isFinite(parsedAmount) || parsedAmount <= 0 || !selectedDate) {
       toast.error("Please fill in all fields");
       return;
     }
 
-    const finalAmount =
-      transactionType === "expense"
-        ? -Math.abs(parseFloat(amount))
-        : Math.abs(parseFloat(amount));
-
-    const formData = new FormData();
-    formData.append("text", text);
-    formData.append("amount", finalAmount.toString());
-    formData.append("date", selectedDate);
-
-    if (selectedCategory) {
-      formData.append("category", selectedCategory);
-    }
-
-    const { error } = await updateTransaction(transaction.id, formData);
+    const { error } = await updateTransaction(transaction.id, {
+      note: note.trim(),
+      amount: parsedAmount,
+      type: transactionType,
+      categoryId: selectedCategoryId || null,
+      transactionDate: new Date(selectedDate).toISOString(),
+    });
 
     if (error) {
       toast.error(error);
@@ -91,10 +83,8 @@ const EditTransactionForm = ({
           type="button"
           onClick={() => {
             setTransactionType("expense");
-            if (
-              !findPickerOption(selectedCategory, "expense", userCategories)
-            ) {
-              setSelectedCategory("");
+            if (!findPickerOption(selectedCategoryId, "expense", userCategories)) {
+              setSelectedCategoryId("");
             }
           }}
           className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 transition-all ${
@@ -111,10 +101,8 @@ const EditTransactionForm = ({
           type="button"
           onClick={() => {
             setTransactionType("income");
-            if (
-              !findPickerOption(selectedCategory, "income", userCategories)
-            ) {
-              setSelectedCategory("");
+            if (!findPickerOption(selectedCategoryId, "income", userCategories)) {
+              setSelectedCategoryId("");
             }
           }}
           className={`flex flex-1 items-center justify-center gap-2 rounded-lg border-2 px-4 py-3 transition-all ${
@@ -128,7 +116,7 @@ const EditTransactionForm = ({
         </button>
       </div>
 
-      {/* date picker */}
+      {/* date */}
       <div className="space-y-2">
         <label htmlFor="date" className="text-sm font-medium text-slate-700 dark:text-slate-300">
           Date
@@ -145,10 +133,10 @@ const EditTransactionForm = ({
         />
       </div>
 
-      {/* category selector */}
+      {/* category */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+        <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
           <SelectTrigger className="h-12 w-full">
             <SelectValue placeholder="Select a category">
               {selectedOption ? (
@@ -175,7 +163,7 @@ const EditTransactionForm = ({
         </Select>
       </div>
 
-      {/* description field */}
+      {/* description */}
       <div className="space-y-2">
         <label htmlFor="text" className="text-sm font-medium text-slate-700 dark:text-slate-300">
           Description
@@ -184,15 +172,15 @@ const EditTransactionForm = ({
           type="text"
           name="text"
           id="text"
-          value={text}
-          onChange={(e) => setText(e.target.value)}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
           placeholder="e.g., groceries, salary, etc."
           required
           className="w-full rounded-lg border border-slate-300 px-4 py-3 focus:border-transparent focus:ring-2 focus:ring-slate-800 focus:outline-none"
         />
       </div>
 
-      {/* amount field */}
+      {/* amount */}
       <div className="space-y-2">
         <label htmlFor="amount" className="text-sm font-medium text-slate-700 dark:text-slate-300">
           Amount
@@ -222,7 +210,7 @@ const EditTransactionForm = ({
         <button
           type="button"
           onClick={onSuccess}
-          className="w-full rounded-lg border border-slate-300 bg-white dark:bg-slate-900 px-4 py-3 font-medium text-slate-700 dark:text-slate-300 transition-all duration-200 hover:border-slate-400 hover:text-slate-900 dark:text-slate-100 sm:w-auto"
+          className="w-full rounded-lg border border-slate-300 bg-white dark:bg-slate-900 px-4 py-3 font-medium text-slate-700 dark:text-slate-300 transition-all duration-200 hover:border-slate-400 hover:text-slate-900 sm:w-auto"
         >
           Cancel
         </button>

@@ -2,7 +2,7 @@
 
 ## 🏷️ **Branding & App Name**
 
-### Recommended App Name: **FlowSpend**
+### Recommended App Name: **Claroo**
 
 **Rationale:**
 

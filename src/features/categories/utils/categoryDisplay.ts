@@ -19,17 +19,18 @@ const FALLBACK = {
 };
 
 export function getCategoryDisplay(
-  category: string | null | undefined
+  categoryLabel: string | null | undefined
 ): CategoryDisplay | null {
-  if (!category) return null;
+  if (!categoryLabel) return null;
 
+  const key = categoryLabel.trim().toLowerCase();
   const match =
-    EXPENSE_CATEGORIES.find((c) => c.value === category) ||
-    INCOME_CATEGORIES.find((c) => c.value === category);
+    EXPENSE_CATEGORIES.find((c) => c.value === key || c.label.toLowerCase() === key) ||
+    INCOME_CATEGORIES.find((c) => c.value === key || c.label.toLowerCase() === key);
 
   if (match) {
     return {
-      label: match.label,
+      label: categoryLabel,
       icon: match.icon,
       color: match.color,
       bgColor: match.bgColor,
@@ -38,7 +39,7 @@ export function getCategoryDisplay(
   }
 
   return {
-    label: category,
+    label: categoryLabel,
     ...FALLBACK,
     isCustom: true,
   };

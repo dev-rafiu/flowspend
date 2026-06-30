@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-const STORAGE_KEY = "flowspend-welcome-seen";
+const STORAGE_KEY = "claroo-welcome-seen";
 
 interface UseOnboardingReturn {
   hasSeenWelcome: boolean;

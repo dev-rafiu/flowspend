@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-import { SignInButton } from "@clerk/nextjs";
+import Link from "next/link";
 import { useRef } from "react";
 import Image from "next/image";
 
@@ -30,17 +30,18 @@ const HeroSection = () => {
           </h1>
 
           <p className="mx-auto max-w-lg text-lg leading-8 text-slate-600 lg:leading-normal">
-            FlowSpend helps you track expenses, analyze spending patterns, and
+            Claroo helps you track expenses, analyze spending patterns, and
             make smarter financial decisions—all in one beautiful, mobile-first
             platform.
           </p>
         </div>
 
-        <SignInButton mode="redirect">
-          <button className="mx-auto cursor-pointer rounded-full bg-slate-800 px-8 py-3 text-base font-semibold text-white shadow-lg transition-all duration-200 hover:bg-slate-900 hover:shadow-xl">
-            Try for free
-          </button>
-        </SignInButton>
+        <Link
+          href="/signup"
+          className="mx-auto cursor-pointer rounded-full bg-slate-800 px-8 py-3 text-base font-semibold text-white shadow-lg transition-all duration-200 hover:bg-slate-900 hover:shadow-xl"
+        >
+          Try for free
+        </Link>
       </motion.div>
 
       <motion.div

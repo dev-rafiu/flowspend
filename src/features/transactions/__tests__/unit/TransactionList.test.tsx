@@ -15,9 +15,11 @@ vi.mock("next/navigation", () => ({
 
 const mockTransaction: Transaction = {
   id: "1",
-  text: "Test Transaction",
+  note: "Test Transaction",
   amount: 100,
-  category: "food",
+  type: "expense",
+  categoryId: "cat-1",
+  categoryLabel: "Food",
   userId: "user-1",
   createdAt: new Date(),
   transactionDate: new Date(),
@@ -46,7 +48,9 @@ describe("TransactionList", () => {
       <TransactionList
         initialTransactions={[mockTransaction]}
         initialCursor={null}
-        allCategories={["food"]}
+        allCategories={[
+          { id: "cat-1", label: "Food", type: "expense" },
+        ]}
         error={undefined}
       />
     );

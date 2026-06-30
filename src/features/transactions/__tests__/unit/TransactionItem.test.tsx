@@ -16,11 +16,14 @@ vi.mock("next/navigation", () => ({
 describe("TransactionItem", () => {
   const MOCK_TRANSACTION: Transaction = {
     id: "1",
-    text: "Test Transaction",
+    note: "Test Transaction",
     amount: 100,
-    category: "food",
+    type: "expense",
+    categoryId: "cat-1",
+    categoryLabel: "Food",
     userId: "1",
     createdAt: new Date(),
+    transactionDate: new Date(),
   };
 
   beforeEach(() => {

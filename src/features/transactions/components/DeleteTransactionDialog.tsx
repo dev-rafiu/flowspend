@@ -18,7 +18,7 @@ import deleteTransaction from "../actions/deleteTransaction";
 
 interface DeleteTransactionDialogProps {
   transactionId: string;
-  transactionText: string;
+  transactionNote: string;
   children: React.ReactNode;
   onSuccess?: () => void;
 }

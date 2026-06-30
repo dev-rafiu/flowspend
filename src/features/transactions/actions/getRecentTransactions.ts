@@ -1,42 +1,22 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
-interface Transaction {
-  id: string;
-  text: string;
-  amount: number;
-  category?: string | null;
-  userId: string;
-  createdAt: Date;
-  transactionDate?: Date;
-}
+import { createClient } from "@/lib/supabase/server";
+import { mapTransactionRow, TRANSACTION_SELECT, TransactionRow } from "../utils/mapRow";
+import type { Transaction } from "../types";
 
 export default async function getRecentTransactions(
   limit: number = 5
-): Promise<{
-  transactions?: Transaction[];
-  error?: string;
-}> {
-  const { userId } = await auth();
+): Promise<{ transactions?: Transaction[]; error?: string }> {
+  const supabase = await createClient();
 
-  if (!userId) {
-    return { error: "User not found" };
-  }
+  const { data, error } = await supabase
+    .from("transactions")
+    .select(TRANSACTION_SELECT)
+    .order("created_at", { ascending: false })
+    .limit(limit)
+    .returns<TransactionRow[]>();
 
-  try {
-    const transactions = await db.transaction.findMany({
-      where: {
-        userId,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-      take: limit,
-    });
+  if (error) return { error: error.message };
 
-    return { transactions };
-  } catch (error) {
-    return { error: "Failed to get transactions" + error };
-  }
+  return { transactions: (data ?? []).map(mapTransactionRow) };
 }

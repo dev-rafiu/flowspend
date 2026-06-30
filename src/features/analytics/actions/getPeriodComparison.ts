@@ -1,59 +1,43 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
-import { AnalyticsPeriod, PeriodComparison, PeriodTotals } from "../types";
+import { createClient } from "@/lib/supabase/server";
+import { AnalyticsPeriod, PeriodComparison } from "../types";
 import { getPeriodRange, getPreviousPeriodRange } from "../utils/period";
-
-async function computeTotals(
-  userId: string,
-  from: Date | null,
-  to: Date | null
-): Promise<PeriodTotals> {
-  const dateFilter = from && to ? { transactionDate: { gte: from, lte: to } } : {};
-
-  const [incomeAgg, expenseAgg] = await Promise.all([
-    db.transaction.aggregate({
-      where: { userId, amount: { gt: 0 }, ...dateFilter },
-      _sum: { amount: true },
-    }),
-    db.transaction.aggregate({
-      where: { userId, amount: { lt: 0 }, ...dateFilter },
-      _sum: { amount: true },
-    }),
-  ]);
-
-  const income = incomeAgg._sum.amount ?? 0;
-  const expense = Math.abs(expenseAgg._sum.amount ?? 0);
-  return { income, expense, net: income - expense };
-}
 
 export default async function getPeriodComparison(
   period: AnalyticsPeriod = "month"
 ): Promise<{ data?: PeriodComparison; error?: string }> {
-  const { userId } = await auth();
+  const supabase = await createClient();
+  const current = getPeriodRange(period);
+  const previous = getPreviousPeriodRange(period);
 
-  if (!userId) return { error: "User not found" };
+  const { data, error } = await supabase.rpc("period_comparison", {
+    current_from: current.from ? current.from.toISOString() : null,
+    current_to: current.to ? current.to.toISOString() : null,
+    previous_from: previous.from ? previous.from.toISOString() : null,
+    previous_to: previous.to ? previous.to.toISOString() : null,
+  });
 
-  try {
-    const current = getPeriodRange(period);
-    const previous = getPreviousPeriodRange(period);
+  if (error) return { error: error.message };
 
-    const [currentTotals, previousTotals] = await Promise.all([
-      computeTotals(userId, current.from, current.to),
-      previous.from && previous.to
-        ? computeTotals(userId, previous.from, previous.to)
-        : Promise.resolve(null),
-    ]);
+  const row = data?.[0];
+  if (!row) return { error: "Failed to load period comparison" };
 
-    return {
-      data: {
-        current: currentTotals,
-        previous: previousTotals,
-        hasPrevious: previousTotals !== null,
+  return {
+    data: {
+      current: {
+        income: Number(row.current_income),
+        expense: Number(row.current_expense),
+        net: Number(row.current_net),
       },
-    };
-  } catch {
-    return { error: "Failed to load period comparison" };
-  }
+      previous: row.has_previous
+        ? {
+            income: Number(row.previous_income),
+            expense: Number(row.previous_expense),
+            net: Number(row.previous_net),
+          }
+        : null,
+      hasPrevious: row.has_previous,
+    },
+  };
 }

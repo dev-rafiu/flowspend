@@ -1,7 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 
 export interface KPIData {
   income: number;
@@ -17,80 +16,58 @@ export default async function getKPIs(): Promise<{
   kpis?: KPIData;
   error?: string;
 }> {
-  const { userId } = await auth();
-  if (!userId) return { error: "User not found" };
+  const supabase = await createClient();
 
-  try {
-    const now = new Date();
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(
-      now.getFullYear(),
-      now.getMonth() + 1,
-      0,
-      23,
-      59,
-      59
-    );
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const endOfMonth = new Date(
+    now.getFullYear(),
+    now.getMonth() + 1,
+    0,
+    23,
+    59,
+    59
+  ).toISOString();
 
-    const [
-      incomeAgg,
-      expenseAgg,
-      countAgg,
-      monthlyIncomeAgg,
-      monthlyExpenseAgg,
-    ] = await Promise.all([
-      db.transaction.aggregate({
-        where: { userId, amount: { gt: 0 } },
-        _sum: { amount: true },
-      }),
-      db.transaction.aggregate({
-        where: { userId, amount: { lt: 0 } },
-        _sum: { amount: true },
-      }),
-      db.transaction.aggregate({
-        where: { userId },
-        _count: { _all: true },
-        _sum: { amount: true },
-      }),
-      db.transaction.aggregate({
-        where: {
-          userId,
-          amount: { gt: 0 },
-          transactionDate: { gte: startOfMonth, lte: endOfMonth },
-        },
-        _sum: { amount: true },
-      }),
-      db.transaction.aggregate({
-        where: {
-          userId,
-          amount: { lt: 0 },
-          transactionDate: { gte: startOfMonth, lte: endOfMonth },
-        },
-        _sum: { amount: true },
-      }),
-    ]);
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("amount, type, transaction_date");
 
-    const income = incomeAgg._sum.amount ?? 0;
-    const expense = Math.abs(expenseAgg._sum.amount ?? 0);
-    const totalTransactions = countAgg._count._all;
-    const grossMovement = Math.abs(income) + expense;
-    const averageTransaction =
-      totalTransactions > 0 ? grossMovement / totalTransactions : 0;
-    const monthlyIncome = monthlyIncomeAgg._sum.amount ?? 0;
-    const monthlyExpense = Math.abs(monthlyExpenseAgg._sum.amount ?? 0);
+  if (error) return { error: error.message };
 
-    return {
-      kpis: {
-        income,
-        expense,
-        netBalance: income - expense,
-        totalTransactions,
-        averageTransaction,
-        monthlyIncome,
-        monthlyExpense,
-      },
-    };
-  } catch {
-    return { error: "Failed to load KPIs" };
+  let income = 0;
+  let expense = 0;
+  let monthlyIncome = 0;
+  let monthlyExpense = 0;
+  const totalTransactions = data?.length ?? 0;
+
+  for (const row of data ?? []) {
+    const amount = typeof row.amount === "string" ? parseFloat(row.amount) : row.amount;
+    const isMonthly =
+      row.transaction_date >= startOfMonth && row.transaction_date <= endOfMonth;
+
+    if (row.type === "income") {
+      income += amount;
+      if (isMonthly) monthlyIncome += amount;
+    } else {
+      expense += amount;
+      if (isMonthly) monthlyExpense += amount;
+    }
   }
+
+  const grossMovement = income + expense;
+  const averageTransaction =
+    totalTransactions > 0 ? grossMovement / totalTransactions : 0;
+
+  return {
+    kpis: {
+      income,
+      expense,
+      netBalance: income - expense,
+      totalTransactions,
+      averageTransaction,
+      monthlyIncome,
+      monthlyExpense,
+    },
+  };
 }

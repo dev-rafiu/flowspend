@@ -1,60 +1,48 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { mapTransactionRow, TRANSACTION_SELECT, TransactionRow } from "../utils/mapRow";
+import type { Transaction, TransactionType } from "../types";
 
-interface TransactionData {
-  text: string;
+export interface AddTransactionInput {
+  note: string;
   amount: number;
-  category?: string | null;
+  type: TransactionType;
+  categoryId?: string | null;
+  transactionDate?: string;
 }
 
-interface TransactionResult {
-  data?: TransactionData;
-  error?: string;
-}
 export default async function addTransaction(
-  formData: FormData
-): Promise<TransactionResult> {
-  const textValue = formData.get("text");
-  const amountValue = formData.get("amount");
-  const categoryValue = formData.get("category");
-  const dateValue = formData.get("date");
-
-  if (!textValue || textValue === "" || !amountValue) {
+  input: AddTransactionInput
+): Promise<{ data?: Transaction; error?: string }> {
+  if (!input.note?.trim() || !Number.isFinite(input.amount) || input.amount <= 0) {
     return { error: "Missing required fields" };
   }
-
-  const text: string = textValue.toString();
-  const amount: number = parseFloat(amountValue.toString());
-  const category: string | null = categoryValue
-    ? categoryValue.toString()
-    : null;
-  const transactionDate = dateValue
-    ? new Date(dateValue.toString())
-    : new Date();
-
-  // get logged in user
-  const { userId } = await auth();
-
-  if (!userId) {
-    return { error: "User not found" };
+  if (input.type !== "income" && input.type !== "expense") {
+    return { error: "Invalid transaction type" };
   }
 
-  try {
-    const transactionData: TransactionData = await db.transaction.create({
-      data: {
-        text,
-        amount,
-        category,
-        transactionDate,
-        userId,
-      },
-    });
-    revalidatePath("/");
-    return { data: transactionData };
-  } catch (error) {
-    return { error: "Failed to add transaction" + error };
-  }
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return { error: "Not authenticated" };
+
+  const { data, error } = await supabase
+    .from("transactions")
+    .insert({
+      user_id: userData.user.id,
+      note: input.note.trim(),
+      amount: input.amount,
+      type: input.type,
+      category_id: input.categoryId ?? null,
+      transaction_date: input.transactionDate ?? new Date().toISOString(),
+    })
+    .select(TRANSACTION_SELECT)
+    .single<TransactionRow>();
+
+  if (error || !data) return { error: error?.message ?? "Failed to add transaction" };
+
+  revalidatePath("/");
+  revalidatePath("/transactions");
+  return { data: mapTransactionRow(data) };
 }

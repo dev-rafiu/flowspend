@@ -14,7 +14,7 @@ const Logo = ({ href, className, showText = true }: LogoProps) => {
         <span className="text-sm font-bold text-white">FS</span>
       </div>
       {showText && (
-        <span className="text-xl font-semibold text-slate-900">FlowSpend</span>
+        <span className="text-xl font-semibold text-slate-900">Claroo</span>
       )}
     </div>
   );

@@ -1,8 +1,7 @@
 "use client";
 
 import { motion, useInView } from "framer-motion";
-
-import { SignInButton } from "@clerk/nextjs";
+import Link from "next/link";
 import { useRef } from "react";
 
 const CTASection = () => {
@@ -23,14 +22,15 @@ const CTASection = () => {
 
         <p className="mx-auto max-w-md text-xl text-slate-300">
           Join thousands of users who are already managing their finances
-          smarter with FlowSpend.
+          smarter with Claroo.
         </p>
 
-        <SignInButton mode="redirect">
-          <button className="mx-auto cursor-pointer rounded-full bg-white px-8 py-3 text-base font-semibold text-slate-900 shadow-lg transition-all duration-200 hover:bg-slate-100 hover:shadow-xl">
-            Try for free
-          </button>
-        </SignInButton>
+        <Link
+          href="/signup"
+          className="mx-auto cursor-pointer rounded-full bg-white px-8 py-3 text-base font-semibold text-slate-900 shadow-lg transition-all duration-200 hover:bg-slate-100 hover:shadow-xl"
+        >
+          Try for free
+        </Link>
       </motion.div>
     </motion.section>
   );

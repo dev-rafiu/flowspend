@@ -1,14 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { db } from "@/lib/db";
-import {
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
-} from "@/features/transactions/constants/categories";
-
-const VALID_CATEGORIES = new Set(
-  [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES].map((c) => c.value)
-);
+import { createClient } from "@/lib/supabase/server";
 
 const MAX_BYTES = 1_000_000; // 1MB
 
@@ -18,10 +9,11 @@ interface ImportError {
 }
 
 interface ParsedRow {
-  text: string;
+  note: string;
   amount: number;
-  category: string | null;
-  transactionDate: Date;
+  type: "income" | "expense";
+  category_label: string | null;
+  transaction_date: string;
 }
 
 function parseCsvLine(line: string): string[] {
@@ -54,23 +46,30 @@ function parseCsvLine(line: string): string[] {
 }
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) {
-    return Response.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return Response.json({ error: "Unauthorized" }, { status: 401 });
 
   const form = await req.formData();
   const file = form.get("file");
 
-  if (!(file instanceof File)) {
+  if (!(file instanceof File))
     return Response.json({ error: "No file uploaded" }, { status: 400 });
-  }
+
   if (file.size > MAX_BYTES) {
-    return Response.json({ error: "File too large (max 1MB)" }, { status: 400 });
+    return Response.json(
+      { error: "File too large (max 1MB)" },
+      { status: 400 }
+    );
   }
 
   const text = await file.text();
-  const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+  const lines = text
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter(Boolean);
 
   if (lines.length < 2) {
     return Response.json(
@@ -82,27 +81,39 @@ export async function POST(req: Request) {
   const records: ParsedRow[] = [];
   const errors: ImportError[] = [];
 
-  // Skip header
+  // Expected columns: Date, Description, Category, Type, Amount
   for (let i = 1; i < lines.length; i++) {
     const cells = parseCsvLine(lines[i]);
-    if (cells.length < 4) {
-      errors.push({ row: i + 1, reason: "Not enough columns" });
+    if (cells.length < 5) {
+      errors.push({
+        row: i + 1,
+        reason:
+          "Not enough columns (expected Date, Description, Category, Type, Amount)",
+      });
       continue;
     }
 
-    const [dateStr, descRaw, categoryRaw, amountStr] = cells;
+    const [dateStr, descRaw, categoryRaw, typeRaw, amountStr] = cells;
     const description = descRaw.trim();
     const category = categoryRaw.trim();
-    const amount = parseFloat(amountStr);
+    const type = typeRaw.trim().toLowerCase();
+    const amount = Math.abs(parseFloat(amountStr));
 
     if (!description) {
       errors.push({ row: i + 1, reason: "Empty description" });
       continue;
     }
-    if (!Number.isFinite(amount) || amount === 0) {
+
+    if (type !== "income" && type !== "expense") {
+      errors.push({ row: i + 1, reason: "Type must be income or expense" });
+      continue;
+    }
+
+    if (!Number.isFinite(amount) || amount <= 0) {
       errors.push({ row: i + 1, reason: "Invalid amount" });
       continue;
     }
+
     const date = new Date(dateStr);
     if (Number.isNaN(date.getTime())) {
       errors.push({ row: i + 1, reason: "Invalid date" });
@@ -110,10 +121,11 @@ export async function POST(req: Request) {
     }
 
     records.push({
-      text: description.slice(0, 200),
+      note: description.slice(0, 200),
       amount,
-      category: VALID_CATEGORIES.has(category) ? category : null,
-      transactionDate: date,
+      type: type as "income" | "expense",
+      category_label: category || null,
+      transaction_date: date.toISOString(),
     });
   }
 
@@ -125,9 +137,43 @@ export async function POST(req: Request) {
     });
   }
 
-  await db.transaction.createMany({
-    data: records.map((r) => ({ ...r, userId })),
-  });
+  // Resolve category labels to IDs in one query
+  const labels = Array.from(
+    new Set(
+      records
+        .map((r) => r.category_label)
+        .filter((l): l is string => Boolean(l))
+    )
+  );
+
+  const labelToId = new Map<string, string>();
+  if (labels.length > 0) {
+    const { data: cats } = await supabase
+      .from("categories")
+      .select("id, label, type")
+      .in("label", labels)
+      .returns<{ id: string; label: string; type: "income" | "expense" }[]>();
+
+    for (const c of cats ?? []) {
+      labelToId.set(`${c.type}:${c.label.toLowerCase()}`, c.id);
+    }
+  }
+
+  const { error: insertError } = await supabase.from("transactions").insert(
+    records.map((r) => ({
+      user_id: user.id,
+      note: r.note,
+      amount: r.amount,
+      type: r.type,
+      category_id: r.category_label
+        ? (labelToId.get(`${r.type}:${r.category_label.toLowerCase()}`) ?? null)
+        : null,
+      transaction_date: r.transaction_date,
+    }))
+  );
+
+  if (insertError)
+    return Response.json({ error: insertError.message }, { status: 500 });
 
   revalidatePath("/transactions");
   revalidatePath("/dashboard");

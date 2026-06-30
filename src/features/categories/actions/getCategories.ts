@@ -1,31 +1,27 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { CategoryType, UserCategory } from "../types";
 
 export default async function getCategories(): Promise<{
   categories: UserCategory[];
   error?: string;
 }> {
-  const { userId } = await auth();
-  if (!userId) return { categories: [], error: "User not found" };
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("categories")
+    .select("id, label, type")
+    .order("type", { ascending: true })
+    .order("label", { ascending: true })
+    .returns<{ id: string; label: string; type: CategoryType }[]>();
 
-  try {
-    const rows = await db.category.findMany({
-      where: { userId },
-      orderBy: [{ type: "asc" }, { label: "asc" }],
-      select: { id: true, label: true, type: true },
-    });
+  if (error) return { categories: [], error: error.message };
 
-    return {
-      categories: rows.map((r) => ({
-        id: r.id,
-        label: r.label,
-        type: r.type as CategoryType,
-      })),
-    };
-  } catch {
-    return { categories: [], error: "Failed to load categories" };
-  }
+  return {
+    categories: (data ?? []).map((r) => ({
+      id: r.id,
+      label: r.label,
+      type: r.type as CategoryType,
+    })),
+  };
 }

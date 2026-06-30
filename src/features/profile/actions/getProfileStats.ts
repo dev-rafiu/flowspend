@@ -1,7 +1,6 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 
 export interface ProfileStats {
   totalTransactions: number;
@@ -14,35 +13,28 @@ export default async function getProfileStats(): Promise<{
   stats?: ProfileStats;
   error?: string;
 }> {
-  const { userId } = await auth();
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("transactions")
+    .select("amount, type")
+    .returns<{ amount: number | string; type: "income" | "expense" }[]>();
 
-  if (!userId) return { error: "User not found" };
+  if (error) return { error: error.message };
 
-  try {
-    const [count, incomeAgg, expenseAgg] = await Promise.all([
-      db.transaction.count({ where: { userId } }),
-      db.transaction.aggregate({
-        where: { userId, amount: { gt: 0 } },
-        _sum: { amount: true },
-      }),
-      db.transaction.aggregate({
-        where: { userId, amount: { lt: 0 } },
-        _sum: { amount: true },
-      }),
-    ]);
-
-    const lifetimeIncome = incomeAgg._sum.amount ?? 0;
-    const lifetimeExpense = Math.abs(expenseAgg._sum.amount ?? 0);
-
-    return {
-      stats: {
-        totalTransactions: count,
-        lifetimeIncome,
-        lifetimeExpense,
-        balance: lifetimeIncome - lifetimeExpense,
-      },
-    };
-  } catch {
-    return { error: "Failed to load profile stats" };
+  let lifetimeIncome = 0;
+  let lifetimeExpense = 0;
+  for (const row of data ?? []) {
+    const amount = typeof row.amount === "string" ? parseFloat(row.amount) : row.amount;
+    if (row.type === "income") lifetimeIncome += amount;
+    else lifetimeExpense += amount;
   }
+
+  return {
+    stats: {
+      totalTransactions: data?.length ?? 0,
+      lifetimeIncome,
+      lifetimeExpense,
+      balance: lifetimeIncome - lifetimeExpense,
+    },
+  };
 }

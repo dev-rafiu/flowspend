@@ -15,7 +15,7 @@ interface SidebarContextValue {
 
 const SidebarContext = createContext<SidebarContextValue | undefined>(undefined);
 
-const STORAGE_KEY = "flowspend-sidebar-collapsed";
+const STORAGE_KEY = "claroo-sidebar-collapsed";
 
 export function SidebarProvider({ children }: { children: React.ReactNode }) {
   const [isCollapsed, setIsCollapsed] = useState(false);

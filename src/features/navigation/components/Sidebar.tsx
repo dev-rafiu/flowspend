@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, ArrowLeftRight, BarChart3, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Logo from "@/components/Logo";
+import Logo from "@/components/layout/Logo";
 import { useSidebar } from "./SidebarContext";
 
 const Sidebar = () => {

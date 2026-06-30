@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SortOption } from "../types";
+import { UserCategory } from "@/features/categories/types";
 
 interface TransactionFiltersProps {
   searchQuery: string;
@@ -18,8 +19,7 @@ interface TransactionFiltersProps {
   onCategoryChange: (value: string) => void;
   sortBy: SortOption;
   onSortChange: (value: SortOption) => void;
-  allCategories: string[];
-  getCategoryLabel: (category: string) => string;
+  allCategories: UserCategory[];
 }
 
 const TransactionFilters = ({
@@ -30,11 +30,9 @@ const TransactionFilters = ({
   sortBy,
   onSortChange,
   allCategories,
-  getCategoryLabel,
 }: TransactionFiltersProps) => {
   return (
     <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-      {/* search */}
       <div data-testid="search-input" className="relative">
         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-slate-400 dark:text-slate-500" />
         <Input
@@ -48,7 +46,7 @@ const TransactionFilters = ({
         {searchQuery && (
           <button
             onClick={() => onSearchChange("")}
-            className="absolute top-1/2 right-3 -translate-y-1/2 transform text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:text-slate-400"
+            className="absolute top-1/2 right-3 -translate-y-1/2 transform text-slate-400 dark:text-slate-500 hover:text-slate-600"
             aria-label="Clear search"
           >
             <X className="h-4 w-4" />
@@ -56,9 +54,7 @@ const TransactionFilters = ({
         )}
       </div>
 
-      {/* filters row - better mobile layout */}
       <div className="grid grid-cols-2 gap-4 sm:flex-row">
-        {/* category filter */}
         <Select value={selectedCategory} onValueChange={onCategoryChange}>
           <SelectTrigger
             data-testid="category-select"
@@ -73,14 +69,13 @@ const TransactionFilters = ({
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
             {allCategories.map((category) => (
-              <SelectItem key={category} value={category}>
-                {getCategoryLabel(category)}
+              <SelectItem key={category.id} value={category.id}>
+                {category.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
 
-        {/* sort option */}
         <Select
           value={sortBy}
           onValueChange={(value) => onSortChange(value as SortOption)}

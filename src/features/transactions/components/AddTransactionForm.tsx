@@ -32,10 +32,8 @@ const AddTransactionForm = ({
   onSuccess,
   isDialog = false,
 }: AddTransactionFormProps) => {
-  const [transactionType, setTransactionType] = useState<"income" | "expense">(
-    "expense"
-  );
-  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [transactionType, setTransactionType] = useState<"income" | "expense">("expense");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>(() => {
     const today = new Date();
     return today.toISOString().split("T")[0];
@@ -44,36 +42,31 @@ const AddTransactionForm = ({
 
   const userCategories = useUserCategories();
   const pickerOptions = buildPickerOptions(transactionType, userCategories);
-  const selectedOption = selectedCategory
-    ? findPickerOption(selectedCategory, transactionType, userCategories)
+  const selectedOption = selectedCategoryId
+    ? findPickerOption(selectedCategoryId, transactionType, userCategories)
     : undefined;
   const router = useRouter();
   const today = new Date().toISOString().split("T")[0];
 
   const handleSubmit = async (formData: FormData) => {
-    const text = formData.get("text") as string;
+    const note = (formData.get("text") as string)?.trim();
     const amount = parseFloat(formData.get("amount") as string);
     const date = formData.get("date") as string;
 
-    if (!text || !amount || !date) {
+    if (!note || !Number.isFinite(amount) || amount <= 0 || !date) {
       toast.error("Please fill in all fields");
       return;
     }
 
     setIsSubmitting(true);
 
-    const finalAmount =
-      transactionType === "expense" ? -Math.abs(amount) : Math.abs(amount);
-
-    const formDataToSend = new FormData();
-    formDataToSend.append("text", text);
-    formDataToSend.append("amount", finalAmount.toString());
-    formDataToSend.append("date", date);
-    if (selectedCategory) {
-      formDataToSend.append("category", selectedCategory);
-    }
-
-    const { error } = await addTransaction(formDataToSend);
+    const { error } = await addTransaction({
+      note,
+      amount,
+      type: transactionType,
+      categoryId: selectedCategoryId || null,
+      transactionDate: new Date(date).toISOString(),
+    });
 
     setIsSubmitting(false);
 
@@ -83,21 +76,18 @@ const AddTransactionForm = ({
     }
 
     toast.success("Transaction added");
-    setSelectedCategory("");
+    setSelectedCategoryId("");
     router.refresh();
     onSuccess?.();
   };
 
   const handleTypeChange = (type: "income" | "expense") => {
     setTransactionType(type);
-    setSelectedCategory("");
+    setSelectedCategoryId("");
   };
 
   return (
-    <form
-      action={handleSubmit}
-      className={cn("space-y-4", !isDialog && "px-4")}
-    >
+    <form action={handleSubmit} className={cn("space-y-4", !isDialog && "px-4")}>
       {/* type toggle */}
       <div
         role="radiogroup"
@@ -131,10 +121,7 @@ const AddTransactionForm = ({
               className={cn(
                 "flex flex-1 items-center justify-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors",
                 isActive
-                  ? cn(
-                      "bg-white shadow-sm dark:bg-slate-800",
-                      activeText
-                    )
+                  ? cn("bg-white shadow-sm dark:bg-slate-800", activeText)
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
               )}
             >
@@ -195,7 +182,7 @@ const AddTransactionForm = ({
           <label className="text-xs font-medium text-slate-600 dark:text-slate-400">
             Category
           </label>
-          <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
             <SelectTrigger className="h-9 w-full">
               <SelectValue placeholder="Select">
                 {selectedOption ? (
@@ -212,16 +199,13 @@ const AddTransactionForm = ({
               {pickerOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   <span className="flex items-center gap-2">
-                    <option.Icon
-                      className={cn("h-4 w-4", option.iconClass)}
-                    />
+                    <option.Icon className={cn("h-4 w-4", option.iconClass)} />
                     <span>{option.label}</span>
                   </span>
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <input type="hidden" name="category" value={selectedCategory} />
         </div>
 
         <div className="space-y-1.5">

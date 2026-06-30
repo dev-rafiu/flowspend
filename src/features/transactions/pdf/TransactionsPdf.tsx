@@ -5,22 +5,9 @@ import {
   Text,
   View,
 } from "@react-pdf/renderer";
-import {
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
-} from "@/features/transactions/constants/categories";
-
-const ALL_CATEGORIES = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
-
-function categoryLabel(value: string | null | undefined): string {
-  if (!value) return "—";
-  return ALL_CATEGORIES.find((c) => c.value === value)?.label ?? value;
-}
 
 function formatCurrency(amount: number): string {
-  return amount
-    .toFixed(2)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function formatDate(value: Date): string {
@@ -33,9 +20,10 @@ function formatDate(value: Date): string {
 
 interface TransactionRow {
   id: string;
-  text: string;
+  note: string | null;
   amount: number;
-  category: string | null;
+  type: "income" | "expense";
+  categoryLabel: string | null;
   transactionDate: Date;
 }
 
@@ -47,43 +35,14 @@ export interface TransactionsPdfProps {
 }
 
 const styles = StyleSheet.create({
-  page: {
-    padding: 36,
-    fontSize: 10,
-    fontFamily: "Helvetica",
-    color: "#0f172a",
-  },
-  brand: {
-    fontSize: 18,
-    fontFamily: "Helvetica-Bold",
-    marginBottom: 2,
-  },
-  subtitle: {
-    fontSize: 11,
-    color: "#475569",
-    marginBottom: 16,
-  },
-  metaRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 4,
-  },
-  metaLabel: {
-    color: "#64748b",
-  },
-  metaValue: {
-    fontFamily: "Helvetica-Bold",
-  },
-  divider: {
-    height: 1,
-    backgroundColor: "#e2e8f0",
-    marginVertical: 12,
-  },
-  summaryGrid: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 16,
-  },
+  page: { padding: 36, fontSize: 10, fontFamily: "Helvetica", color: "#0f172a" },
+  brand: { fontSize: 18, fontFamily: "Helvetica-Bold", marginBottom: 2 },
+  subtitle: { fontSize: 11, color: "#475569", marginBottom: 16 },
+  metaRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 4 },
+  metaLabel: { color: "#64748b" },
+  metaValue: { fontFamily: "Helvetica-Bold" },
+  divider: { height: 1, backgroundColor: "#e2e8f0", marginVertical: 12 },
+  summaryGrid: { flexDirection: "row", gap: 8, marginBottom: 16 },
   summaryTile: {
     flex: 1,
     borderWidth: 1,
@@ -91,15 +50,8 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 8,
   },
-  summaryLabel: {
-    fontSize: 9,
-    color: "#64748b",
-    marginBottom: 4,
-  },
-  summaryValue: {
-    fontSize: 13,
-    fontFamily: "Helvetica-Bold",
-  },
+  summaryLabel: { fontSize: 9, color: "#64748b", marginBottom: 4 },
+  summaryValue: { fontSize: 13, fontFamily: "Helvetica-Bold" },
   tableHeader: {
     flexDirection: "row",
     borderBottomWidth: 1,
@@ -120,9 +72,7 @@ const styles = StyleSheet.create({
     color: "#64748b",
     letterSpacing: 0.5,
   },
-  td: {
-    fontSize: 10,
-  },
+  td: { fontSize: 10 },
   cellDate: { width: "18%" },
   cellDesc: { width: "40%", paddingRight: 6 },
   cellCategory: { width: "20%" },
@@ -148,23 +98,17 @@ export default function TransactionsPdf({
   transactions,
 }: TransactionsPdfProps) {
   const totalIncome = transactions
-    .filter((t) => t.amount > 0)
+    .filter((t) => t.type === "income")
     .reduce((sum, t) => sum + t.amount, 0);
-  const totalExpense = Math.abs(
-    transactions
-      .filter((t) => t.amount < 0)
-      .reduce((sum, t) => sum + t.amount, 0)
-  );
+  const totalExpense = transactions
+    .filter((t) => t.type === "expense")
+    .reduce((sum, t) => sum + t.amount, 0);
   const net = totalIncome - totalExpense;
 
   return (
-    <Document
-      title="FlowSpend transactions"
-      author="FlowSpend"
-      creator="FlowSpend"
-    >
+    <Document title="Claroo transactions" author="Claroo" creator="Claroo">
       <Page size="A4" style={styles.page}>
-        <Text style={styles.brand}>FlowSpend</Text>
+        <Text style={styles.brand}>Claroo</Text>
         <Text style={styles.subtitle}>Transaction statement</Text>
 
         <View style={styles.metaRow}>
@@ -215,15 +159,15 @@ export default function TransactionsPdf({
         </View>
 
         {transactions.map((t) => {
-          const isIncome = t.amount > 0;
+          const isIncome = t.type === "income";
           return (
             <View key={t.id} style={styles.tableRow} wrap={false}>
               <Text style={[styles.td, styles.cellDate]}>
                 {formatDate(t.transactionDate)}
               </Text>
-              <Text style={[styles.td, styles.cellDesc]}>{t.text}</Text>
+              <Text style={[styles.td, styles.cellDesc]}>{t.note ?? ""}</Text>
               <Text style={[styles.td, styles.cellCategory]}>
-                {categoryLabel(t.category)}
+                {t.categoryLabel ?? "—"}
               </Text>
               <Text
                 style={[
@@ -232,14 +176,14 @@ export default function TransactionsPdf({
                   isIncome ? styles.amountIncome : styles.amountExpense,
                 ]}
               >
-                {isIncome ? "+" : "-"}${formatCurrency(Math.abs(t.amount))}
+                {isIncome ? "+" : "-"}${formatCurrency(t.amount)}
               </Text>
             </View>
           );
         })}
 
         <View style={styles.footer} fixed>
-          <Text>Generated by FlowSpend</Text>
+          <Text>Generated by Claroo</Text>
           <Text
             render={({ pageNumber, totalPages }) =>
               `Page ${pageNumber} of ${totalPages}`

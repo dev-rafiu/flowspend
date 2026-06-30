@@ -1,12 +1,13 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import BottomNav from "./BottomNav";
 
 const ConditionalBottomNav = async () => {
-  const user = await currentUser();
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  // Only show bottom nav for authenticated users
   if (!user) return null;
-
   return <BottomNav />;
 };
 

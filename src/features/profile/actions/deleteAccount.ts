@@ -1,22 +1,20 @@
 "use server";
 
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 
 export default async function deleteAccount(): Promise<{
   ok?: true;
   error?: string;
 }> {
-  const { userId } = await auth();
-  if (!userId) return { error: "Not authenticated" };
+  const supabase = await createClient();
+  const { data: userData } = await supabase.auth.getUser();
+  if (!userData.user) return { error: "Not authenticated" };
 
   try {
-    await db.transaction.deleteMany({ where: { userId } });
-    await db.user.deleteMany({ where: { clerkUserId: userId } });
-
-    const client = await clerkClient();
-    await client.users.deleteUser(userId);
-
+    const admin = createAdminClient();
+    const { error } = await admin.auth.admin.deleteUser(userData.user.id);
+    if (error) return { error: error.message };
     return { ok: true };
   } catch (error) {
     console.error("Account deletion failed:", error);

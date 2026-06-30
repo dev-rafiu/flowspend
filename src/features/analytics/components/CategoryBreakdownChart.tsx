@@ -1,22 +1,12 @@
 "use client";
 
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
-import {
-  EXPENSE_CATEGORIES,
-  INCOME_CATEGORIES,
-} from "@/features/transactions/constants/categories";
 import { CategoryBreakdownItem } from "../types";
 import { getCategoryColor } from "../utils/categoryColors";
 import { formatCurrency } from "@/lib/utils";
 
 interface Props {
   items: CategoryBreakdownItem[];
-}
-
-const ALL_CATEGORIES = [...EXPENSE_CATEGORIES, ...INCOME_CATEGORIES];
-
-function getCategoryLabel(value: string) {
-  return ALL_CATEGORIES.find((c) => c.value === value)?.label ?? "Other";
 }
 
 interface TooltipPayload {
@@ -36,7 +26,7 @@ function CustomTooltip({ active, payload }: CustomTooltipProps) {
   return (
     <div className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs shadow-md dark:border-slate-700 dark:bg-slate-900">
       <p className="font-medium text-slate-900 dark:text-slate-100">
-        {getCategoryLabel(item.category)}
+        {item.category}
       </p>
       <p className="text-slate-600 dark:text-slate-400">
         ${formatCurrency(item.total)} ·{" "}
@@ -92,7 +82,7 @@ export default function CategoryBreakdownChart({ items }: Props) {
               style={{ backgroundColor: getCategoryColor(item.category) }}
               aria-hidden="true"
             />
-            <span className="truncate">{getCategoryLabel(item.category)}</span>
+            <span className="truncate">{item.category}</span>
             <span className="ml-auto text-xs text-slate-500 tabular-nums dark:text-slate-400">
               {item.percentage.toFixed(0)}%
             </span>

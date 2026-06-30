@@ -1,11 +1,4 @@
 import { Transaction } from "../types";
-import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "../constants/categories";
-
-export const getCategoryLabel = (categoryValue: string) => {
-  const expenseCat = EXPENSE_CATEGORIES.find((c) => c.value === categoryValue);
-  const incomeCat = INCOME_CATEGORIES.find((c) => c.value === categoryValue);
-  return expenseCat?.label || incomeCat?.label || categoryValue;
-};
 
 export const formatGroupDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -32,20 +25,16 @@ export const formatGroupDate = (dateString: string) => {
 export const groupTransactionsByDate = (
   transactions: Transaction[]
 ): Record<string, Transaction[]> => {
-  const grouped = transactions.reduce(
+  return transactions.reduce(
     (acc, transaction) => {
       const date = transaction.transactionDate
         ? new Date(transaction.transactionDate)
         : new Date(transaction.createdAt);
       const dateKey = date.toDateString();
-      if (!acc[dateKey]) {
-        acc[dateKey] = [];
-      }
+      if (!acc[dateKey]) acc[dateKey] = [];
       acc[dateKey].push(transaction);
       return acc;
     },
     {} as Record<string, Transaction[]>
   );
-
-  return grouped;
 };

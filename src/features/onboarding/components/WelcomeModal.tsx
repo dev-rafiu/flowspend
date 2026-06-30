@@ -25,7 +25,7 @@ const STEPS: Step[] = [
     Icon: Wallet,
     iconBg: "bg-emerald-100 dark:bg-emerald-900/40",
     iconColor: "text-emerald-600 dark:text-emerald-400",
-    title: "Welcome to FlowSpend",
+    title: "Welcome to Claroo",
     description:
       "Track every dollar in seconds. Add income and expenses as they happen.",
   },

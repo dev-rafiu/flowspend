@@ -1,11 +1,15 @@
+export type TransactionType = "income" | "expense";
+
 export interface Transaction {
   id: string;
-  text: string;
-  amount: number;
-  category?: string | null;
+  note: string | null;
+  amount: number; // always positive; sign is implied by `type`
+  type: TransactionType;
+  categoryId: string | null;
+  categoryLabel: string | null;
   userId: string;
+  transactionDate: Date;
   createdAt: Date;
-  transactionDate?: Date;
 }
 
 export type SortOption =

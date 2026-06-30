@@ -1,11 +1,11 @@
 import getTransactions from "../actions/getTransactions";
-import getUserCategories from "../actions/getUserCategories";
+import getCategories from "@/features/categories/actions/getCategories";
 import TransactionList from "./TransactionList";
 
 export default async function TransactionListLoader() {
   const [pageResult, categoriesResult] = await Promise.all([
     getTransactions(),
-    getUserCategories(),
+    getCategories(),
   ]);
 
   const initialTransactions = pageResult.page?.transactions ?? [];

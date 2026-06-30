@@ -17,6 +17,10 @@ vi.mock("../../actions/addTransaction", () => ({
   default: vi.fn(),
 }));
 
+vi.mock("@/features/categories/actions/getCategories", () => ({
+  default: vi.fn(() => Promise.resolve({ categories: [] })),
+}));
+
 describe("AddTransactionForm", () => {
   beforeEach(() => {
     render(

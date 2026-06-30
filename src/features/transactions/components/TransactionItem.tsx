@@ -11,19 +11,13 @@ import DeleteTransactionDialog from "./DeleteTransactionDialog";
 import { Button } from "@/components/ui/button";
 
 function TransactionItem({ transaction }: { transaction: Transaction }) {
-  const isIncome = transaction.amount > 0;
-  const amount = Math.abs(transaction.amount);
+  const isIncome = transaction.type === "income";
   const router = useRouter();
 
-  const categoryInfo = getCategoryDisplay(transaction.category);
+  const categoryInfo = getCategoryDisplay(transaction.categoryLabel);
 
-  const handleDeleteSuccess = () => {
-    router.refresh();
-  };
-
-  const handleEditSuccess = () => {
-    router.refresh();
-  };
+  const handleDeleteSuccess = () => router.refresh();
+  const handleEditSuccess = () => router.refresh();
 
   return (
     <li
@@ -36,7 +30,6 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
           {categoryInfo &&
             (() => {
               const Icon = categoryInfo.icon;
-
               return (
                 <div
                   className={cn(
@@ -52,19 +45,13 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
 
           <div className="min-w-0 flex-1">
             {categoryInfo && (
-              <p
-                id="category-name"
-                className="text-sm font-semibold text-slate-900 dark:text-slate-100"
-              >
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                 {categoryInfo.label}
               </p>
             )}
 
-            <p
-              id="transaction-text"
-              className="truncate text-xs text-slate-500 dark:text-slate-400"
-            >
-              {transaction.text}
+            <p className="truncate text-xs text-slate-500 dark:text-slate-400">
+              {transaction.note ?? ""}
             </p>
           </div>
         </div>
@@ -76,7 +63,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
               isIncome ? "text-green-600" : "text-red-600"
             )}
           >
-            {isIncome ? "+" : "-"}${formatCurrency(amount)}
+            {isIncome ? "+" : "-"}${formatCurrency(transaction.amount)}
           </span>
 
           <div className="flex items-center gap-1 transition-opacity duration-200">
@@ -96,7 +83,7 @@ function TransactionItem({ transaction }: { transaction: Transaction }) {
 
             <DeleteTransactionDialog
               transactionId={transaction.id}
-              transactionText={transaction.text}
+              transactionNote={transaction.note ?? ""}
               onSuccess={handleDeleteSuccess}
             >
               <Button

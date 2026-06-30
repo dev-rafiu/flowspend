@@ -48,7 +48,7 @@ export default function ProfileCard({
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-lg font-semibold text-slate-900 dark:text-slate-100">
-            {name?.trim() || "FlowSpend user"}
+            {name?.trim() || "Claroo user"}
           </p>
           <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500 dark:text-slate-400">
             <span className="flex items-center gap-1.5">

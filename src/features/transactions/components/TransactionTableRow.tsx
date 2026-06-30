@@ -11,29 +11,20 @@ import DeleteTransactionDialog from "./DeleteTransactionDialog";
 import { Button } from "@/components/ui/button";
 
 function TransactionTableRow({ transaction }: { transaction: Transaction }) {
-  const isIncome = transaction.amount > 0;
-  const amount = Math.abs(transaction.amount);
+  const isIncome = transaction.type === "income";
   const router = useRouter();
 
-  const categoryInfo = getCategoryDisplay(transaction.category);
+  const categoryInfo = getCategoryDisplay(transaction.categoryLabel);
 
-  const handleDeleteSuccess = () => {
-    router.refresh();
-  };
+  const handleDeleteSuccess = () => router.refresh();
+  const handleEditSuccess = () => router.refresh();
 
-  const handleEditSuccess = () => {
-    router.refresh();
-  };
-
-  const formatDate = (date: Date) => {
-    const transactionDate =
-      (transaction as Transaction).transactionDate || date;
-    return new Date(transactionDate).toLocaleDateString("en-US", {
+  const formatDate = (date: Date) =>
+    new Date(date).toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
-  };
 
   return (
     <tr className="border-b border-slate-200 dark:border-slate-800 transition-colors hover:bg-slate-50 dark:bg-slate-900">
@@ -61,14 +52,14 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
               </p>
             )}
             <p className="truncate text-sm text-slate-500 dark:text-slate-400">
-              {transaction.text}
+              {transaction.note ?? ""}
             </p>
           </div>
         </div>
       </td>
 
       <td className="px-4 py-3 text-sm text-slate-600 dark:text-slate-400">
-        {formatDate(transaction.createdAt)}
+        {formatDate(transaction.transactionDate)}
       </td>
 
       <td className="px-4 py-3">
@@ -78,7 +69,7 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
             isIncome ? "text-green-600" : "text-red-600"
           )}
         >
-          {isIncome ? "+" : "-"}${formatCurrency(amount)}
+          {isIncome ? "+" : "-"}${formatCurrency(transaction.amount)}
         </span>
       </td>
 
@@ -91,7 +82,7 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-slate-100"
+              className="h-8 w-8 text-slate-600 dark:text-slate-400 hover:text-slate-900"
               aria-label="Edit transaction"
             >
               <Pencil className="h-4 w-4" />
@@ -100,7 +91,7 @@ function TransactionTableRow({ transaction }: { transaction: Transaction }) {
 
           <DeleteTransactionDialog
             transactionId={transaction.id}
-            transactionText={transaction.text}
+            transactionNote={transaction.note ?? ""}
             onSuccess={handleDeleteSuccess}
           >
             <Button

@@ -1,28 +1,21 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { auth } from "@clerk/nextjs/server";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 export default async function deleteCategory(
   id: string
 ): Promise<{ ok?: true; error?: string }> {
-  const { userId } = await auth();
-  if (!userId) return { error: "Not authenticated" };
+  const supabase = await createClient();
+  const { error, count } = await supabase
+    .from("categories")
+    .delete({ count: "exact" })
+    .eq("id", id);
 
-  try {
-    const result = await db.category.deleteMany({
-      where: { id, userId },
-    });
+  if (error) return { error: error.message };
+  if (!count) return { error: "Category not found" };
 
-    if (result.count === 0) {
-      return { error: "Category not found" };
-    }
-
-    revalidatePath("/profile");
-    revalidatePath("/transactions");
-    return { ok: true };
-  } catch {
-    return { error: "Failed to delete category" };
-  }
+  revalidatePath("/profile");
+  revalidatePath("/transactions");
+  return { ok: true };
 }

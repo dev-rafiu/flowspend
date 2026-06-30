@@ -21,14 +21,13 @@ const defaultProps = {
   sortBy: "date-desc" as SortOption,
   onSortChange: vi.fn(),
   allCategories: [
-    "food",
-    "housing",
-    "transportation",
-    "utilities",
-    "entertainment",
-    "other",
+    { id: "1", label: "Food", type: "expense" as const },
+    { id: "2", label: "Housing", type: "expense" as const },
+    { id: "3", label: "Transport", type: "expense" as const },
+    { id: "4", label: "Utilities", type: "expense" as const },
+    { id: "5", label: "Entertainment", type: "expense" as const },
+    { id: "6", label: "Other", type: "expense" as const },
   ],
-  getCategoryLabel: (c: string) => c,
 };
 
 describe("TransactionFilters", () => {

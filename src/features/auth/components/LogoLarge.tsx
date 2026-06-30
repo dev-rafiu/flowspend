@@ -14,7 +14,7 @@ const LogoLarge = ({ href, className, showText = true }: LogoLargeProps) => {
         <span className="text-2xl font-bold text-white">FS</span>
       </div>
       {showText && (
-        <span className="text-4xl font-semibold text-slate-900">FlowSpend</span>
+        <span className="text-4xl font-semibold text-slate-900">Claroo</span>
       )}
     </div>
   );

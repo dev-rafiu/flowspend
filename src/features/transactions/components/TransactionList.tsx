@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import TransactionTable from "./TransactionTable";
 import TransactionMobileList from "./TransactionMobileList";
 import TransactionFilters from "./TransactionFilters";
@@ -14,13 +14,13 @@ import { Transaction, SortOption } from "../types";
 import {
   groupTransactionsByDate,
   formatGroupDate,
-  getCategoryLabel,
 } from "../utils/transactionUtils";
+import { UserCategory } from "@/features/categories/types";
 
 interface TransactionListProps {
   initialTransactions: Transaction[];
   initialCursor: string | null;
-  allCategories: string[];
+  allCategories: UserCategory[];
   error?: string;
 }
 
@@ -147,7 +147,6 @@ export default function TransactionList({
           sortBy={sortBy}
           onSortChange={setSortBy}
           allCategories={allCategories}
-          getCategoryLabel={getCategoryLabel}
         />
 
         {hasFilters && (

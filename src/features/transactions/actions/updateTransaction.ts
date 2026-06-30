@@ -1,72 +1,52 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
-import { db } from "@/lib/db";
+import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { mapTransactionRow, TRANSACTION_SELECT, TransactionRow } from "../utils/mapRow";
+import type { Transaction, TransactionType } from "../types";
+import type { Database } from "@/lib/supabase/database.types";
 
-interface TransactionData {
-  text: string;
+type TransactionUpdate = Database["public"]["Tables"]["transactions"]["Update"];
+
+export interface UpdateTransactionInput {
+  note: string;
   amount: number;
-  category?: string | null;
-  transactionDate?: Date;
-}
-
-interface TransactionResult {
-  data?: TransactionData;
-  error?: string;
+  type: TransactionType;
+  categoryId?: string | null;
+  transactionDate?: string;
 }
 
 export default async function updateTransaction(
   id: string,
-  formData: FormData
-): Promise<TransactionResult> {
-  const textValue = formData.get("text");
-  const amountValue = formData.get("amount");
-  const categoryValue = formData.get("category");
-  const dateValue = formData.get("date");
-
-  if (!textValue || textValue === "" || !amountValue) {
+  input: UpdateTransactionInput
+): Promise<{ data?: Transaction; error?: string }> {
+  if (!input.note?.trim() || !Number.isFinite(input.amount) || input.amount <= 0) {
     return { error: "Missing required fields" };
   }
-
-  const text: string = textValue.toString();
-  const amount: number = parseFloat(amountValue.toString());
-  const category: string | null = categoryValue
-    ? categoryValue.toString()
-    : null;
-  const transactionDate = dateValue
-    ? new Date(dateValue.toString())
-    : undefined;
-
-  // get logged in user
-  const { userId } = await auth();
-
-  if (!userId) {
-    return { error: "User not found" };
+  if (input.type !== "income" && input.type !== "expense") {
+    return { error: "Invalid transaction type" };
   }
 
-  try {
-    const updateData: TransactionData = {
-      text,
-      amount,
-      category,
-    };
+  const supabase = await createClient();
 
-    if (transactionDate) {
-      updateData.transactionDate = transactionDate;
-    }
+  const update: TransactionUpdate = {
+    note: input.note.trim(),
+    amount: input.amount,
+    type: input.type,
+    category_id: input.categoryId ?? null,
+  };
+  if (input.transactionDate) update.transaction_date = input.transactionDate;
 
-    const transactionData: TransactionData = await db.transaction.update({
-      where: {
-        id,
-        userId,
-      },
-      data: updateData,
-    });
-    revalidatePath("/");
-    revalidatePath("/transactions");
-    return { data: transactionData };
-  } catch (error) {
-    return { error: "Failed to update transaction: " + error };
-  }
+  const { data, error } = await supabase
+    .from("transactions")
+    .update(update)
+    .eq("id", id)
+    .select(TRANSACTION_SELECT)
+    .single<TransactionRow>();
+
+  if (error || !data) return { error: error?.message ?? "Failed to update transaction" };
+
+  revalidatePath("/");
+  revalidatePath("/transactions");
+  return { data: mapTransactionRow(data) };
 }
